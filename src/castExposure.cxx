@@ -1,9 +1,9 @@
-#include <CASTExposure.h>
+#include <castExposure.h>
 
-ClassImp(CASTExposure)
+//ClassImp(CASTExposure)
 
-CASTExposure::CASTExposure( ) { }
+castExposure::castExposure( ) { }
 
-CASTExposure::~CASTExposure( ) { }
+castExposure::~castExposure( ) { }
 
 

@@ -8,7 +8,6 @@ Bogazici University
 Date: 22 Oct 2010
 ***********************************************************************/
 
-
 #ifndef _CASTCONVERSION_
 #define _CASTCONVERSION_
 
