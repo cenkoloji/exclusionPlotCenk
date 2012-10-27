@@ -29,38 +29,32 @@ using namespace std;
 
 class castGas// : public TObject
 {
-
 	public:
-		castGas(double atw, castMagnet *CASTM);
-		castGas(double atw, castMagnet *CASTM, int t); // Use this!
-		//castGas(double atw, castMagnet *CASTM, char *fileIn);
+		castGas(double atw, castMagnet *CASTM, int t);
 		~castGas();
-		
-		castMagnet *mag;//definition of the magnet
-		double atomicwg;//atomic weight of the gas into the magnet
-		double pressmGamma[2][PRESSENTRIES];
+
+		castMagnet *mag;    //definition of the magnet
+		double atomicwg;    //atomic weight of the buffer gas
+		double pressmGamma[2][PRESSENTRIES]; // Not used in Cenk code?
 		int entries;
-		int type;//type of gas 0 for ideal gas 1 for HW and 2 for CW
-		
+		int type;           //type of gas: 0 for ideal gas 1 for HW and 2 for CW
+
 		//sets
 		void setType(int t){type=t;};//Sets the gas type
-		
+
 		//gets
-		double getPhotonMass(double pressure, double angle =0.0);//return the effective photon mass in eV
+		double getPhotonMass(double pressure, double angle = 0.0);//return the effective photon mass in eV
 		double getGasDensity(double pressure, double angle = 0.0);//return the gas density of the gas in gr*cm-3
 		double getMagnetLength(double pressure, double angle = 0.0);//return the magnet lengt for a given pressure inside de Coldbore
-                
+
                 // Function to print information
                 void Show();
 
 		//Double_t GetPhotonPressure(Double_t mgamma);//return the pressure for a expected mgamma in mbar // commented from Juanan
-		
+
 		//ClassDef (castGas,1); //artifact
 
 };
 #endif
-
-
-
 
 

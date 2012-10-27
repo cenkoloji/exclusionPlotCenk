@@ -14,11 +14,12 @@ int main()
 {
 
     // Defining number of elements of arrays {{{
-    int Nma = 10000; // Number of axion masses
+    int Nma = 1000; // Number of axion masses for each pressure
     int NEp = 7; // Number of photon energies
     int Npres = 11; // Number of pressures }}}
 
-    // Initializing arrays {{{ 
+    // Initializing arrays and constants {{{ 
+    char filename[256];
     double * maArray;           // Axion mass array (Created later)
     double * EphotonArray;      // Photon energy array (keV)
     double * pressureArray;     // Pressure array (mbar)
@@ -47,7 +48,6 @@ int main()
             double energy = EphotonArray[j];
 
             // Opening file to be written
-            char filename[256];
             ofstream outFile;                                       // create object for output
             sprintf(filename,"out/%g_%g.txt", pressure, energy);    // File name convention: Pressure_Energy.txt
             outFile.open(filename);
@@ -56,7 +56,7 @@ int main()
             if (photonMass == 0.0)
                 maArray = constructLinearArray(1e-7,0.1,Nma);         // Axion mass array for vacuum (eV)
             else
-                maArray = constructLinearArray(photonMass*0.8,photonMass*1.2,Nma);         // Axion mass array around mgamma (eV)
+                maArray = constructLinearArray(photonMass*0.9,photonMass*1.1,Nma);    // Axion mass array around mgamma (eV)
 
             for (int k = 0; k < Nma; k++)  // Loop over axion masses
             {

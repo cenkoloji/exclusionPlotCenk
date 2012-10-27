@@ -2,84 +2,111 @@
 #include <castDetector.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <fstream>
 #include <iostream>
-
+#include <cstdlib>
 
 //ClassImp(castDetector)
 
-// Default constructor {{{
-castDetector::castDetector( ) 
-{
-
-for(int i=0;i<EFF_POINTS;i++)detEfficiency[i]=0;
-
+// Default constructor, setting efficiency points to 0, initializing Einitial, Efinal, focusArea {{{
+castDetector::castDetector(double Ei, double Ef, double area, double oeff): Einitial(Ei), Efinal(Ef), focusArea(area),opticsEfficiency(oeff)
+{ 
+    for(int i=0;i<EFF_POINTS;i++)
+        detEfficiency[i]=0; 
 }// }}}
 
 castDetector::~castDetector( ) { }
 
+//setDetEfficiency(char *effFileName,double softEff) set the efficiency of the detector from text file in format (energy efficiency) the energy bins start at 0.1 keV and end at 11.9 keV with a step of stepsize keV {{{
+void castDetector::setDetEfficiency(char *effFileName, double softEff){
 
-//setDetEfficiency(char *effFile,double softEff) set the efficiency of the detector via text file in format (energy	efficiency) the energy bins start at 0.1 keV and ends at 11.9 keV with a step of 0.2 keV {{{
-void castDetector::setDetEfficiency(char *effFile,double softEff){
+    int i = 0;
+    double energy;
 
-int nEff = 0;
-double a,b;
+    ifstream effFile;           // create object to read
+    effFile.open(effFileName);  // associate with a file
 
-FILE *fEff = fopen(effFile, "r" );
-	while( fscanf( fEff, "%lf\t%lf\n", &a, &b ) != EOF )
-	{
-		detEfficiency[nEff] = softEff * b;
-		printf(" En %1.1lf Eff %.3lf\n",(double)nEff*0.2,detEfficiency[nEff]);
-		nEff++;
-	}
+    if (!effFile.is_open()) { cout << "Could not open the file " << effFileName<< " -> Terminating..." << endl; exit(EXIT_FAILURE); }
 
-cout << "Efficiency points : " << nEff << endl;
-fclose(fEff);
+    while  (effFile.good()) // while input good and not at EOF
+    {
+        effFile >> energy >> detEfficiency[i];
+        detEfficiency[i] =  detEfficiency[i] * softEff;
+        cout << "En: " << energy << " Eff: " << detEfficiency[i] << endl;
+        i++;
+    }
+    cout << "Efficiency points : " << i << endl;
+
+    effFile.close();         // Closing the file
 
 } //}}}
 
-//getDetEfficiency(double e) return the efficiency of the detector for a given energy (in keV)
-double castDetector::getDetEfficiency(double e){
+//getDetEfficiency(double e,bool interpolate) return the efficiency of the detector for a given energy (in keV), with or without interpolation {{{
+double castDetector::getDetEfficiency(double e,bool interpolate)
+{
 
-double en,eff;
+    double en,eff;
 
-	for( int j = 0; j < EFF_POINTS; j++ )
-	{
-		en = 0.2 * (double)(j);
-		if( e >= en && e < en + 0.2 ){
-			eff = detEfficiency[j];
-			break;
-			}
-	}
-	if( eff == 0 ) { printf("EFFICIENCY ZERO!!  %lf\n",e); exit(0); }
+        if (interpolate == true) // Interpolation: Is better if efficiency is given for fixed energies,(it is not!) {{{
+        {
+            for( int j = 0; j < EFF_POINTS; j++ )
+            {
+                    en = 0.1 + stepsize * (double)(j);
+                    if( e >= en && e < en + stepsize )
+                    {
+                        cout << en << " " << e << " " << en + stepsize << " " << endl;
+                        cout << detEfficiency[j] << " " << detEfficiency[j + 1] << endl;
+                        eff = detEfficiency[j+1] - (en + stepsize -e)*(detEfficiency[j+1]-detEfficiency[j])/stepsize;
+                        break;
+                    }
+            }
+            if( eff == 0 ) { printf("EFFICIENCY ZERO!!  %lf\n",e); exit(0); }
 
-//printf("En %lf Eff %lf\n",e,eff);
+        } //  }}}
 
-return eff;
-}
+        else // No interpolation: Is better if efficiency is given as a histogram. USE THIS!  {{{
+        {
+            for( int j = 0; j < EFF_POINTS; j++ )
+            {
+                    en = stepsize * (double)(j);
+                    if( e >= en && e < en + stepsize)
+                    {
+                        eff = detEfficiency[j];
+                        break;
+                    }
+            }
+            if( eff == 0 ) { printf("EFFICIENCY ZERO!!  %lf\n",e); exit(0); }
+        } // }}}
 
-//getMeanEfficiency() return the mean efficiency of the detector in the energy range of operation for the detector
-double castDetector::getMeanEfficiency(){
+    //printf("En %lf Eff %lf\n",e,eff);
 
-double nEff=0,eff=0,en;
+    return eff;
+} // }}}
 
-	for( int j = 0; j < EFF_POINTS; j++ )
-	{
-		en = 0.2 * (double)(j);
-			if( en>=Einitial && en <Efinal){
-			eff+= detEfficiency[j];
-			nEff++;
-			}
-	}
-	//if( eff == 0 ) { printf("EFFICIENCY ZERO!!\n"); exit(0); }
+//getMeanEfficiency() return the mean efficiency of the detector in the energy range of operation for the detector {{{
+double castDetector::getMeanEfficiency()
+{
 
-//printf("Mean Eff %lf\n",eff/nEff);
+    double nEff=0,eff=0,en;
 
-return eff/nEff;
+    for( int j = 0; j < EFF_POINTS; j++ )
+    {
+        en = stepsize * (double)(j);
+        if( en>=Einitial && en <Efinal)
+        {
+            eff+= detEfficiency[j];
+            nEff++;
+        }
+    }
 
+    //printf("Mean Eff %lf\n",eff/nEff);
 
-}
+    return eff/nEff;
 
-void castDetector::setCCDEfficiency(char *effFile){
+} // }}}
+
+void castDetector::setCCDEfficiency(char *effFile) // Not used! {{{
+{
 
 int nEff=0,line=0;
 double a,b,meanEff;
@@ -100,9 +127,4 @@ FILE *fEff = fopen(effFile, "r" );
 cout << "Efficiency points : " << nEff << endl;
 fclose(fEff);
 
-
-
-}
-
-
-
+} // }}}

@@ -20,13 +20,16 @@ Date: 22 Oct 2010
 #include<castMagnet.h>
 #include<castGas.h>
 
+// I don't use these (They are from Javier-Juanan code)
+//#define PhMeterIneV 5067731.236453719
+//#define lightSpeed  2.99792458E8
+//#define naturalElectron 0.302822120214353
+
+
 // Conversions of important quantities to natural units
 #define BLconversion 0.989842342144  // From Tm to GeV
 #define Lconversion  5067730.93     // From m to eV-1
 
-#define PhMeterIneV 5067731.236453719
-#define lightSpeed  2.99792458E8
-#define naturalElectron 0.302822120214353
 
 //using namespace std;
 
@@ -34,20 +37,29 @@ Date: 22 Oct 2010
 class castConversion// : public TObject
 {
 
-	public:
+    public:
 
-		castConversion(castMagnet *castMag, castGas *Cg);
-		~castConversion();
+        castConversion(castMagnet *castMag, castGas *Cg);
+        ~castConversion();
 
-		castMagnet *mag;//The parameters of the magnet
-		castGas *gas;//The parameters of the gas
+        castMagnet *mag;    //The parameters of the magnet
+        castGas *gas;       //The parameters of the gas
 
-		double ConversionProbability(double ma, double Ea, double press, double angle = 0.0);//Probability of conversion for a axion mass (eV), a energy (keV) and pressure(mbar)
-		double CalculateNormalizedFactor(double mg,double angle = 0.0);//return the normalized factor for the conversion probability 
-		double AbsorptionCoeff(double en, double p,double angle = 0.0);//absortion coefficient factor for a pressure and a energy in the magnet (energy in keV and p in mbar)
-		double getAxionFlux( double e ); //Axion flux cm-2 s-1 keV-1 (energy in eV)
-		double ExpectedNumberOfCounts( double Ei, double Ef, double ma, double mgamma, double time );//return the expected number of counts for a energy range (keV) a axion mass (eV) a expected mgamma (eV) and the exposure time (seconds) 
+        //Probability of conversion for a axion mass (eV), a energy (keV), pressure(mbar) and angle(deg)
+        double ConversionProbability(double ma, double Ea, double press, double angle = 0.0);
 
-		//ClassDef(castConversion,1)
+        //return the normalized factor for press(mbar), angle(deg)
+        double CalculateNormalizedFactor(double press,double angle = 0.0);
+
+        //absortion coefficient factor for a pressure and a energy in the magnet (energy in keV and p in mbar)
+        double AbsorptionCoeff(double en, double p,double angle = 0.0);
+
+        //Axion flux cm-2 s-1 keV-1 (energy in eV)
+        double getAxionFlux( double e );
+
+        //Expected number of counts for a energy range (keV) a axion mass (eV) a expected mgamma (eV) and the exposure time (seconds) 
+        double ExpectedNumberOfCounts( double Ei, double Ef, double ma, double mgamma, double time );
+
+        //ClassDef(castConversion,1)
 };
 #endif

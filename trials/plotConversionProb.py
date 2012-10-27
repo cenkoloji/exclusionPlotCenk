@@ -41,7 +41,7 @@ ax.legend()
 ax.set_xlim(0.0001,0.08)
 #ax.set_xscale("log")
 #ax.set_yscale("log")
-pl.savefig('probVac.pdf',bbox_inches='tight')
+#pl.savefig('plots/probVac.pdf',bbox_inches='tight')
 pl.show() # }}}
 
 # Plot of 10mbar for different energies {{{
@@ -61,7 +61,7 @@ ax.legend()
 ax.set_xlim(0.33,0.343)
 #ax.set_xscale("log")
 #ax.set_yscale("log")
-pl.savefig('prob' + str(p) + 'mbar.pdf',bbox_inches='tight')
+#pl.savefig('plots/prob' + str(p) + 'mbar.pdf',bbox_inches='tight')
 pl.show()
 #}}}
 
@@ -75,11 +75,11 @@ E = 3 # keV
 for p in parray:
     marray = data[p][E]['ma']
     probVac = data[p][E]['prob']
-    ax.plot(marray,probVac,lw=2,alpha=1,label = "p=%gmbar"%(p))
+    ax.plot(marray,probVac,lw=1.5,alpha=1,label = "p=%gmbar"%(p))
 
 #ax.legend()
-ax.set_xlim(0.001,1)
+ax.set_xlim(1e-5,1)
 #ax.set_xscale("log")
 #ax.set_yscale("log")
-pl.savefig('probvsPressure.pdf',bbox_inches='tight')
+#pl.savefig('plots/probvsPressure.pdf',bbox_inches='tight')
 pl.show() # }}}

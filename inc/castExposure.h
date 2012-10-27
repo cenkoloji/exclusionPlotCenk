@@ -1,5 +1,6 @@
 /**********************************************************************
-Definition of exposure, which pressure, how long?
+Definition of exposure, which pressure, how long etc. Its just used to create a root file.
+Not too usefull if you won't use ROOT
 Based on a original codes of Javier Galan and Juan Antonio Garcia
 
 Author: Cenk Yıldız
@@ -28,7 +29,7 @@ class castExposure //: public TObject
 		double pressure;
 		double timeExp;
 		int gasType;
-                double angle; // Will be considered later
+                double angle; // Will be considered later ***ANGLE
 
 	//ClassDef(castExposure,1);
 

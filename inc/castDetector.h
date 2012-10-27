@@ -29,27 +29,32 @@ class castDetector // : public TObject
 {
 
         private:
-		double opticsEfficiency;//Optic Efficiency for the focus X-ray
-		double focusArea;//Focus Area of the detector in cm2 (e.g. for mM is the area of the coldbore and for CCD is around 0.15 cm2)
-		double detEfficiency[EFF_POINTS];//Efficiency array of the detector
-		double Einitial;//Minimum energy used in analysis
-		double Efinal;//Maximum energy used in analysis
+                double static const stepsize = 0.2; //Energy step size for MM Efficiency file
+		double opticsEfficiency;            //Optic Efficiency for the focus X-ray
+		double focusArea;                   //Focus Area of the detector in cm2 (For MM it is CB area)
+                                                    //(e.g. for mM is the area of the coldbore and for CCD is around 0.15 cm2)
+
+		double detEfficiency[EFF_POINTS];   //Efficiency array of the detector
+		double Einitial;                    //Minimum energy used in analysis
+		double Efinal;                      //Maximum energy used in analysis
 
 	public:
-		castDetector();
+		castDetector(double Ei = 2.0, double Ef = 7.0, double area = 14.55, double oeff = 1.0);
 		~castDetector();
 
 		//Sets
-		void setOpticsEfficiency(double oEff){ opticsEfficiency= oEff;}; // CCD
-		void setDetEfficiency(char *effFile,double softEff); // for MM
-		void setCCDEfficiency(char *effFile); //CCD
-		void setFocusArea(double fA){focusArea = fA;}; // CCD
+		void setDetEfficiency(char *effFileName,double softEff); // for MM
 		void setEinitial(double Ei){Einitial = Ei;};
 		void setEfinal(double Ef){Efinal = Ef;};
+		void setFocusArea(double fA){focusArea = fA;};  //For SSMM, same as CB area
+
+                //CCD only
+		void setOpticsEfficiency(double oEff){ opticsEfficiency= oEff;}; // CCD
+		void setCCDEfficiency(char *effFileName);       //CCD
+		double getOpticsEfficiency(){return opticsEfficiency;};     // For CCD
 
 		//Gets
-		double getOpticsEfficiency(){return opticsEfficiency;};
-		double getDetEfficiency(double e);
+		double getDetEfficiency(double e,bool interpolate = false); // Gets efficiency for a fixed energy
 		double getFocusArea(){return focusArea;};
 		double getEinitial(){return Einitial;};
 		double getEfinal(){return Efinal;};
@@ -58,10 +63,3 @@ class castDetector // : public TObject
 	//ClassDef (CASTDetector,1);
 };
 #endif
-
-
-
-
-
-
-
