@@ -1,5 +1,6 @@
 - Add angle if needed to all lines, that has flag ***ANGLE
 
+- Implement different low and high energy efficiencies in castDetector
 - Correct Magnet Length formulas (castGas::getMagnetLength)
 - In the end rename getMagnetLength as getCoherenceLength
 - In castGas, there is type=3. Remove if not needed

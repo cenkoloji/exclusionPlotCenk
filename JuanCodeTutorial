@@ -1,0 +1,15 @@
+Initialize trees:
+trkTree
+expTree
+
+Fills trees with content of output files (exposure and tracking counts)
+I believe its not necessary, creating arrays should be enough.
+However there is something nice about writing and reading a tree from a class, it reads in the order of data members. I can keep it.
+
+gL4=like->GetgL4(ma,expTree,tckTree);
+
+    nGamma = GetNgammaCounts(ma,expTree): It gets total expected photons for all exposure, for this axion mass, as a function of g
+
+
+
+
