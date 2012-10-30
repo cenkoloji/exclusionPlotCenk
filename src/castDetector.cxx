@@ -11,6 +11,7 @@
 // Default constructor, setting efficiency points to 0, initializing Einitial, Efinal, focusArea {{{
 castDetector::castDetector(double Ei, double Ef, double area, double oeff): Einitial(Ei), Efinal(Ef), focusArea(area),opticsEfficiency(oeff)
 { 
+    cout << Einitial <<endl ;
     for(int i=0;i<EFF_POINTS;i++)
         detEfficiency[i]=0; 
 }// }}}
@@ -32,7 +33,7 @@ void castDetector::setDetEfficiency(char *effFileName, double softEff){
     {
         effFile >> energy >> detEfficiency[i];
         detEfficiency[i] =  detEfficiency[i] * softEff;
-        cout << "En: " << energy << " Eff: " << detEfficiency[i] << endl;
+        cout << "i: " << i << " En: " << energy << " Eff: " << detEfficiency[i] << endl;
         i++;
     }
     cout << "Efficiency points : " << i << endl;
@@ -128,3 +129,16 @@ cout << "Efficiency points : " << nEff << endl;
 fclose(fEff);
 
 } // }}}
+
+void castDetector::Show() // {{{
+{
+
+    cout << "\nDetector Information" << endl;
+    cout << "====================" << endl;
+    cout << "Optics Eff: "  << opticsEfficiency << endl; 
+    cout << "Focus Area: "  << focusArea        << endl; 
+    cout << "E[i]: "        << Einitial  << endl; 
+    cout << "E[f]: "        << Efinal    << endl; 
+    cout << "Mean Eff(Ei - Ef keV): "    << getMeanEfficiency()  << endl; 
+                
+}// }}}

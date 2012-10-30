@@ -1,3 +1,3 @@
 28-10-2012 Cenk Yildiz <cenk.yildiz@cern.ch>
 	* Cleaned all methods in castExposure. Pushing the new commit
-	* This version still uses Trees, will be corrected in new version
+	* This version still uses Trees, will be replaced with vector in new version

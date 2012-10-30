@@ -34,9 +34,9 @@ class castDetector // : public TObject
 		double focusArea;                   //Focus Area of the detector in cm2 (For MM it is CB area)
                                                     //(e.g. for mM is the area of the coldbore and for CCD is around 0.15 cm2)
 
-		double detEfficiency[EFF_POINTS];   //Efficiency array of the detector
 		double Einitial;                    //Minimum energy used in analysis
 		double Efinal;                      //Maximum energy used in analysis
+		double detEfficiency[EFF_POINTS];   //Efficiency array of the detector
 
 	public:
 		castDetector(double Ei = 2.0, double Ef = 7.0, double area = 14.55, double oeff = 1.0);
@@ -59,6 +59,9 @@ class castDetector // : public TObject
 		double getEinitial(){return Einitial;};
 		double getEfinal(){return Efinal;};
 		double getMeanEfficiency();
+
+                // Function to print information
+                void Show();
 
 	//ClassDef (CASTDetector,1);
 };
