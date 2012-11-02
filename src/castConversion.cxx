@@ -61,7 +61,7 @@ double castConversion::AbsorptionCoeff(double en, double p,double angle)
 
     double densityHe = gas->getGasDensity(p);//in [g/cm^3] // ***ANGLE
     double mu;
- 
+
     //Cenk's implementation (For some reason, Juanan and Javier's used Annika's version, which is worse)
     mu = std::exp(-1.5832 + 5.9195 * std::exp(-0.353808*en)+4.03598*std::exp(-0.970557*en)); // expressed as mu/ro in NIST
 

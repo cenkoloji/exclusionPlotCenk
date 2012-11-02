@@ -19,12 +19,28 @@ castDetector::castDetector(double Ei, double Ef, double area, double oeff): Eini
 castDetector::~castDetector( ) { }
 
 //setDetEfficiency(char *effFileName,double softEff) set the efficiency of the detector from text file in format (energy efficiency) the energy bins start at 0.1 keV and end at 11.9 keV with a step of stepsize keV {{{
-void castDetector::setDetEfficiency(char *effFileName, double softEff){
+void castDetector::setDetEfficiency(char *effFileName, char *softEffFileName)
+{
 
     int i = 0;
     double energy;
 
     ifstream effFile;           // create object to read
+    effFile.open(softEffFileName);  // associate with a file
+
+    if (!effFile.is_open()) { cout << "Could not open the file " << softEffFileName<< " -> Terminating..." << endl; exit(EXIT_FAILURE); }
+
+    while  (effFile.good()) // while input good and not at EOF
+    {
+        effFile >> energy >> softwareEfficiency[i];
+        cout << "i: " << i << " En: " << energy << " Eff: " << softwareEfficiency[i] << endl;
+        i++;
+    }
+    cout << "Software Efficiency points : " << i << endl;
+
+    effFile.close();         // Closing the file
+
+    i = 0;
     effFile.open(effFileName);  // associate with a file
 
     if (!effFile.is_open()) { cout << "Could not open the file " << effFileName<< " -> Terminating..." << endl; exit(EXIT_FAILURE); }
@@ -32,7 +48,7 @@ void castDetector::setDetEfficiency(char *effFileName, double softEff){
     while  (effFile.good()) // while input good and not at EOF
     {
         effFile >> energy >> detEfficiency[i];
-        detEfficiency[i] =  detEfficiency[i] * softEff;
+        detEfficiency[i] =  detEfficiency[i] * softwareEfficiency[i];
         cout << "i: " << i << " En: " << energy << " Eff: " << detEfficiency[i] << endl;
         i++;
     }

@@ -60,6 +60,7 @@ int main( int argc, char *argv[])
     int ndetectors = 2;
     double softwareEfficiencies[]={0.5,0.5};
     char mMEffFile[256];
+    char softwareEfficiencyFile[256];
     sprintf(mMEffFile,"%s/mMEfficiency.txt",inputPath); // TODO: Change
 
     castDetector *det[ndetectors];
@@ -67,12 +68,13 @@ int main( int argc, char *argv[])
     for(int i=0;i<ndetectors; i++)
     {
         det[i]= new castDetector();
-        det[i]->setDetEfficiency(mMEffFile,softwareEfficiencies[i]);
+        sprintf(softwareEfficiencyFile,"%s/mMSoftEfficiency%s.txt",inputPath,prefix)
+        det[i]->setDetEfficiency(mMEffFile,softwareEfficiencyFile);
         det[i]->Show();
     }
     // }}}
 
-    // Reading Exposure and Tracking Trees, creating vector arrays {{{
+    // Reading Exposure and Tracking Files, creating vector arrays {{{
 
     char expFileName[256];      // File name of exposure file
     ifstream expFile;           // file object to read
@@ -141,13 +143,14 @@ int main( int argc, char *argv[])
     like->Show();
 
     char tmp[256];
-    sprintf( tmp, "%s/sunset2008/comb/aM%lf.txt",outputPath,ma);
+    sprintf( tmp, "%s/aM%lf.txt",outputPath,ma);
     FILE *fg = fopen( tmp, "w" );
 
     double gL4;
 
-    gL4=like->GetgL4(ma, vecExposure,vecTracking);
-    //gL4=like->GetgL4_Dummy(ma, vecExposure,vecTracking);
+    double gRange[]={-30000,10000.}; //Ranges to plot gl4
+    //gL4=like->GetgL4(ma, vecExposure,vecTracking,);
+    like->plot_gL4(ma, vecExposure,vecTracking,50,gRange);
 
     cout << "   ma:" << ma << endl;
     cout << "   gL4:" << gL4 << "*10^(-40)" << endl;

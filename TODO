@@ -1,10 +1,28 @@
-- Add angle if needed to all lines, that has flag ***ANGLE
+- Add angle if needed to all lines, that has flag ***ANGLE??? It's not baked enough
+    * If you'll add it best seems as recreating exposure file with 1 min bins, without doing fancy exposure calculation. And creating files as:
+    Pressure    Angle   ExpTime(fixed:60 sec)
 
-- Implement different low and high energy efficiencies in castDetector
-- Correct Magnet Length formulas (castGas::getMagnetLength)
+- Define good environment variables to define output and input paths
+- Make program based on testLike.cxx and put in ./bin
+- Program to calculate ngamma
 - In the end rename getMagnetLength as getCoherenceLength
-- In castGas, there is type=3. Remove if not needed
-- Magnet Effective Length in castGas
++ Implement different low and high energy efficiencies in castDetector
++ In castGas, there is type=3. Remove if not needed
++ Correct Magnet Length formulas (castGas::getMagnetLength)
++ Check Pressure formulas (castGas::)
 
 If needed: Theo code:
 /afs/cern.ch/exp/cast/mmM11/wdirsr2010/Analysis2010/Exclusion
+
+List of angle dependency:
+castConversion:
+    - CalculateNormalizedFactor
+        *castGas->GetMagnetLength
+    - ConversionProbability
+        *castGas->getPhotonMass
+        *CalculateNormalizedFactor
+        *AbsorptionCoeff
+        *castGas->getMagnetLength
+
+Or: Tracing back from testLike:
+    - 

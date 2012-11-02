@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 #include <cmath>
 #include <math.h>
 #include <vector>
+#include <cstdlib>
 
 #include<castLike.h>
 //#include<TMath.h>
@@ -17,7 +20,7 @@
 //castLike(castConversion *castconv, castMagnet *castmag, castGas *Cgas,castDetector *castdet[],int ndet) Constructor with definitions of conversion, magnet, gas and number of detectors {{{
 castLike::castLike(castConversion *cconv, castMagnet *cmag, castGas *cgas, castDetector *cdet[], int ndet)
 {
-				
+
     for(int i=0;i<ndet;i++)
         det[i]=cdet[i];
 
@@ -26,6 +29,7 @@ castLike::castLike(castConversion *cconv, castMagnet *cmag, castGas *cgas, castD
     mag=cmag;
     gas=cgas;
     gasTypes = 0;
+    sprintf(outputPath,"./"); //TODO
 
     printf("Number of detectors %d\n",ndetectors);
 }// }}}
@@ -87,11 +91,21 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
         g4Step=1.E9;
 
     //castTracking *tck = new castTracking();
-    printf("Axion mass %lf\n",ma);
+    printf("Axion mass %.4f\n",ma);
 
     // Get the total expected counts
     double nGamma = GetNgammaCounts(ma,vecExp);
     cout << "nGamma: " << nGamma <<endl ;
+
+
+    ofstream outFileValues;
+    if (writeToFile)
+    {
+        char fnameValues[256];
+        sprintf(fnameValues,"%s/%.4f_values",outputPath,ma);
+        cout << fnameValues<< endl;
+        outFileValues.open(fnameValues);
+    }
 
 
     double term2 = 0;
@@ -167,7 +181,12 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
             chi[j]  = term1 + term2;
             cout<<"\tj: " << j<< ",  g: " << g4 << ",  chi[j] - chi[0]: "<< chi[j] - chi[0] << "  term1,2: " << term1<<", "<< term2 <<  "    chi = " << chi[j] <<  "    exp(chi) = " << std::exp(chi[j]) << "    exp(chi-chi0) = " << std::exp(chi[j]-chi[0]) << endl;
 
-            cout<< j<< "\t" << g4 << "\t"<< chi[j] - chi[0] << "\t" << term1<<"\t"<< term2 <<"\t" << chi[j] <<  "\t" << std::exp(chi[j]) << "\t" << std::exp(chi[j]-chi[0]) << endl;
+            if (writeToFile)
+            {
+            outFileValues   << j<< "\t" << g4 << "\t"<< chi[j] - chi[0] << "\t"
+                            << term1<<"\t"<< term2 <<"\t" << chi[j] <<  "\t"
+                            << std::exp(chi[j]) << "\t" << std::exp(chi[j]-chi[0]) << endl;
+            }
             if(j%1000==0)
             {
                 if (j!= 0)
@@ -193,20 +212,26 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
 
     //delete tck;
 
+    if (writeToFile)
+        outFileValues.close();
+
     return gL4;
     //return 0;
 
 }// }}}
 
-double castLike::GetgL4_Dummy(double ma, const vector<castExposure> vecExp[],const vector<castTracking> vecTrk[])//This function implements the likelihood for a given axion; trackings counts and exposure for one or more detectors {{{
+double castLike::plot_gL4(double ma, const vector<castExposure> vecExp[], const vector<castTracking> vecTrk[], double g4Step, double *range)//This function implements the likelihood for a given axion; trackings counts and exposure for one or more detectors {{{
 {
 
-    double g4Step = 10000., g4,E,E0,Ef;
-    double chi[MAX_ITERATIONS];//,mgammaCount;   // chi := -1/2 Chi**2
+    double g4,E,E0,Ef;
+    double chi[20000];//,mgammaCount;   // chi := -1/2 Chi**2
     int nChi,nCounts;
 
-    if(ma>1.5)
-        g4Step=1.E9;
+    ofstream outFileValues;
+    char fnameValues[256];
+    sprintf(fnameValues,"%s/%.4f_valuesForPlot",outputPath,ma);
+    cout << fnameValues<< endl;
+    outFileValues.open(fnameValues);
 
     //castTracking *tck = new castTracking();
     printf("Axion mass %lf\n",ma);
@@ -218,10 +243,12 @@ double castLike::GetgL4_Dummy(double ma, const vector<castExposure> vecExp[],con
     double term2 = 0;
     double term1;
 
+    g4 = range[0];
+
     // Iterating over g for some values
-    for (int j = 0; j < 1000; j++)
+    for (int j = 0; j < MAX_ITERATIONS; j++)
     {
-        g4 = pow(double(1.1),double(j)) * 0.01;
+        g4 += double(j) * 0.01;
 
         // First term of Chi: g4 * nGamma
         term1 = -1.0 * g4 * nGamma;
@@ -257,21 +284,24 @@ double castLike::GetgL4_Dummy(double ma, const vector<castExposure> vecExp[],con
                 double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure, 1.0 );
                 term2+=  std::log ( bcklevel + g4 * expCounts );
 
-                cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;
+                //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;
             }
 
         }
 
         chi[j]  = term1 + term2;
         cout<<"\tj: " << j<< ",  g: " << g4 << ",  chi[j] - chi[0]: "<< chi[j] - chi[0] << "  term1,2: " << term1<<", "<< term2 <<  "    chi = " << chi[j] <<  "    exp(chi) = " << std::exp(chi[j]) << "    exp(chi-chi0) = " << std::exp(chi[j]-chi[0]) << endl;
-        if(j%1000==0)
-        {
-            if (j!= 0)
-                cout<<"j: " << j<< ",  g: " << g4 << ",  chi[j] - chi[0]: "<< chi[j] - chi[0] << "  term1,2: " << term1<<", "<< term2 <<  "    chi = " << chi[j] <<  "    exp(chi) = " << std::exp(chi[j]) << "    exp(chi-chi0) = " << std::exp(chi[j]-chi[0]) << endl;
-        }
 
+        outFileValues << std::setprecision(9);
+        outFileValues   << j<< "\t" << g4 << "\t"<< chi[j] - chi[0] << "\t"
+          << term1<<"\t"<< term2 <<"\t" << chi[j] <<  "\t" << std::exp(chi[j])
+          << "\t" << std::exp(chi[j]-chi[0]) << endl;
 
+        if (g4>range[1])
+            break;
     }
+
+    outFileValues.close();
 
     //double integral = IntegrateChi( chi, nChi );
     //double gL4 = g4Step * GetLimit( chi, integral );

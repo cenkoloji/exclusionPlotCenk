@@ -49,6 +49,7 @@ class castLike// : public TObject
 		castConversion *conv;
 		castMagnet *mag;
 		castGas *gas;
+                char outputPath[256];
 		int ndetectors;
 		bool gasTypes;
 
@@ -63,7 +64,7 @@ class castLike// : public TObject
                 double GetgL4(double ma, const vector<castExposure> vecExp[],const vector<castTracking> vecTrk[],bool writeToFile=false);
 
                 //Dummy function to check different values of g vs chi
-                double GetgL4_Dummy(double ma, const vector<castExposure> vecExp[],const vector<castTracking> vecTrk[]);
+                double plot_gL4(double ma, const vector<castExposure> vecExp[],const vector<castTracking> vecTrk[],double step,double *range);
 
                 //This function calculates the minimun value for gL4 for a given axion mass
 		//double GetMinLike(double ma,TTree *expTree[],TTree *tckTree[],TTree &gL4Tree, double g4,double &sigmaLeft,double &sigmaRight);

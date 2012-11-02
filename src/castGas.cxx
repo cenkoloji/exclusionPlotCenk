@@ -29,8 +29,6 @@ double castGas::getPhotonMass(double pressure,double angle){
         return 23.46550825*sqrt(getGasDensity(pressure)); // 23.5 would be enough I think. I found this constant a bit different
     else if(type==2)
         return 23.46550825*sqrt(getGasDensity(pressure)); // 23.5 would be enough I think. I found this constant a bit different
-    else if(type==3)
-        return pressmGamma[1][(int)((pressure-10.)*100.)];
     else 
         return 0;
 } // }}}
@@ -56,9 +54,6 @@ double castGas::getGasDensity(double pressure,double angle){
             return den;
         else return 0;
     }
-    else if(type==3)
-        return pressmGamma[1][(int)((pressure-10.)*100.)]*pressmGamma[1][(int)((pressure-10.)*100.)]/548.810273;
-
     else 
         return 0;
 } // }}}
@@ -71,11 +66,11 @@ double castGas::getMagnetLength(double pressure, double angle){
     if(type==0)
         return mag->getLenMag();
     else if(type==1)
-        return (815.7-2.694*pressure)*1E-2;
+        return (922.3-4.8*pressure)*1E-2;
+        //return (815.7-2.694*pressure)*1E-2;
     else if (type==2)
-        return 7.82;
-    else if (type==3)
-        return 7.26;
+        return (861.1-2.1*pressure)*1E-2; // Nuno CFD
+        //return 7.82; // Jaime
     else 
         return 0;
 

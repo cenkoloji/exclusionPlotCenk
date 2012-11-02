@@ -9,8 +9,9 @@ int main()
 {
     castDetector * cd = new castDetector();
 
-    char efffilename[128] = "/afs/cern.ch/exp/cast/mmscratch/cenk/excCodeJuanan/inputs/mMEfficiency.txt";
-    cd->setDetEfficiency(efffilename,1.0);
+    char efffilename[128] = "mMEfficiency.txt";
+    char softefffilename[128] = "mMSoftEfficiency1.txt";
+    cd->setDetEfficiency(efffilename,softefffilename);
 
     cd->setEinitial(2.0);
     cd->setEfinal(7.0);
