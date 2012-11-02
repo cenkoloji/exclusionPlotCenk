@@ -16,7 +16,7 @@ castGas::castGas(double atw, castMagnet *CASTM, int t)
     mag = CASTM;
 } // }}}
 
-castGas::~castGas(){}
+castGas::~castGas(){ }
 
 //getPhotonMass(double pressure,double angle) return the expected mass of the axion in eV type 0 for 4He(ideal gas); type 1 for 3He HW (Jaime's formula) and type 2 for CW (Jaime's formula) {{{
 double castGas::getPhotonMass(double pressure,double angle){
@@ -59,7 +59,7 @@ double castGas::getGasDensity(double pressure,double angle){
 } // }}}
 
 //getMagnetLength(double pressure,double angle) return the magnet lengt(m) for a given pressure inside de Coldbore {{{
-double castGas::getMagnetLength(double pressure, double angle){
+double castGas::getMagnetLength(double pressure, double angle){  
     // TODO: Find correct formulas!
     // ***ANGLE
 

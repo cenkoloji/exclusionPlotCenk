@@ -43,8 +43,6 @@ int main( int argc, char *argv[])
 
     char namePrefix[]={'1','2'}; // Name prefix for files of different detectors
 
-
-
     //Setting Paths {{{
     char outputPath[256],inputPath[256];
     sprintf(inputPath,"%s/inputs/",getenv("CAST_PATH"));
@@ -69,7 +67,7 @@ int main( int argc, char *argv[])
     for(int i=0;i<ndetectors; i++)
     {
         det[i]= new castDetector();
-        sprintf(softwareEfficiencyFile,"%s/mMSoftEfficiency%s.txt",inputPath,prefix)
+        sprintf(softwareEfficiencyFile,"%s/mMSoftEfficiency%s.txt",inputPath,namePrefix[i]);
         det[i]->setDetEfficiency(mMEffFile,softwareEfficiencyFile);
         det[i]->Show();
     }

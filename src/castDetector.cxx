@@ -13,7 +13,12 @@ castDetector::castDetector(double Ei, double Ef, double area, double oeff): Eini
 { 
     cout << Einitial <<endl ;
     for(int i=0;i<EFF_POINTS;i++)
+    {
         detEfficiency[i]=0; 
+        softwareEfficiency[i]=0;
+    }
+
+    cout << "smtgDET" <<endl ;
 }// }}}
 
 castDetector::~castDetector( ) { }

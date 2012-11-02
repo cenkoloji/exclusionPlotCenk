@@ -21,6 +21,7 @@ int main( int argc, char *argv[])
 
     double ma=0.38;
 
+
     // Command Line Arguments {{{
     if(argc>=2)
     {
@@ -41,35 +42,38 @@ int main( int argc, char *argv[])
         }
     }// }}}
 
+    cout << "\nStarting Limit Calculation for 2008 data with ma= " << ma <<endl ;
+
     char namePrefix[]={'1','2'}; // Name prefix for files of different detectors
-
-
 
     //Setting Paths {{{
     char outputPath[256],inputPath[256];
     sprintf(inputPath,"%s/inputs/",getenv("CAST_PATH"));
+    cout << "\nInput Path: " << inputPath  <<endl ;
     sprintf(outputPath,"%s/outputs/",getenv("CAST_PATH"));
+    cout << "Output Path: " << outputPath  <<endl ;
     // }}}
 
+
     //castMagnet instance
+    cout << "\nCreating magnet instance..." <<endl ;
     castMagnet *mag = new castMagnet();
     mag->Show();
 
     //castDetector instances, eff file and initialization of each instance {{{
 
-    double Einitial=2.,Efinal=7.;
     int ndetectors = 2;
-    double softwareEfficiencies[]={0.5,0.5};
     char mMEffFile[256];
     char softwareEfficiencyFile[256];
     sprintf(mMEffFile,"%s/mMEfficiency.txt",inputPath); // TODO: Change
 
+    cout << "\nCreating detector instances..." <<endl ;
     castDetector *det[ndetectors];
 
     for(int i=0;i<ndetectors; i++)
     {
         det[i]= new castDetector();
-        sprintf(softwareEfficiencyFile,"%s/mMSoftEfficiency%s.txt",inputPath,prefix)
+        sprintf(softwareEfficiencyFile,"%s/mMSoftEfficiency%c.txt",inputPath,namePrefix[i]);
         det[i]->setDetEfficiency(mMEffFile,softwareEfficiencyFile);
         det[i]->Show();
     }
@@ -92,7 +96,7 @@ int main( int argc, char *argv[])
 
     for(int i=0;i<ndetectors; i++)
     {
-        sprintf(expFileName,"pressureExposureSunset%c.txt",namePrefix[i]);
+        sprintf(expFileName,"%s/pressureExposureSunset%c.txt",inputPath,namePrefix[i]);
         expFile.open(expFileName);  // associate with a file
         cout << expFileName << endl;
 
@@ -109,7 +113,7 @@ int main( int argc, char *argv[])
 
         expFile.close();         // Closing the file
 
-        sprintf(trkFileName,"finalTrackingcounts_2008.Sunset%c",namePrefix[i]);
+        sprintf(trkFileName,"%s/finalTrackingcounts_2008.Sunset%c",inputPath,namePrefix[i]);
         trkFile.open(trkFileName);  // associate with a file
         cout << trkFileName << endl;
 
@@ -150,8 +154,8 @@ int main( int argc, char *argv[])
     double gL4;
 
     double gRange[]={-30000,10000.}; //Ranges to plot gl4
-    //gL4=like->GetgL4(ma, vecExposure,vecTracking,);
-    like->plot_gL4(ma, vecExposure,vecTracking,50,gRange);
+    gL4=like->GetgL4(ma, vecExposure,vecTracking);
+    //like->plot_gL4(ma, vecExposure,vecTracking,50,gRange);
 
     cout << "   ma:" << ma << endl;
     cout << "   gL4:" << gL4 << "*10^(-40)" << endl;

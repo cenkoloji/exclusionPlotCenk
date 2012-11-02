@@ -7,7 +7,8 @@ using namespace std;
 void castMagnet::Show()
 {
 
-cout << "\nMagnet Information" << endl;
+
+cout << "\nMagnet Information " << endl;
 cout << "==================" << endl;
 cout << "Magnetic Field: " << BMag << endl; 
 cout << "Temperature: " << TMag << endl; 
