@@ -30,17 +30,20 @@ class castDetector // : public TObject
 
         private:
                 double static const stepsize = 0.2;     //Energy step size for MM Efficiency file
-		double opticsEfficiency;                //Optic Efficiency for the focus X-ray
-		double focusArea;                       //Focus Area of the detector in cm2 (For MM it is CB area)
-                                                        //(e.g. for mM is the area of the coldbore and for CCD is around 0.15 cm2)
 
 		double Einitial;                        //Minimum energy used in analysis
 		double Efinal;                          //Maximum energy used in analysis
+
+		double focusArea;                       //Focus Area of the detector in cm2 (For MM it is CB area)
+                                                        //(e.g. for mM is the area of the coldbore and for CCD is around 0.15 cm2)
+
+		double opticsEfficiency;                //Optic Efficiency for the focus X-ray
+
 		double detEfficiency[EFF_POINTS];       //Efficiency array of the detector
 		double softwareEfficiency[EFF_POINTS];  //Software Efficiency array of the detector
 
 	public:
-		castDetector(double Ei = 2.0, double Ef = 7.0, double area = 14.55, double oeff = 1.0);
+		castDetector(double Ei = 2.0, double Ef = 7.0, double focusarea = 14.55, double oeff = 1.0);
 		~castDetector();
 
 		//Sets

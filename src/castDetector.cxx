@@ -9,7 +9,7 @@
 //ClassImp(castDetector)
 
 // Default constructor, setting efficiency points to 0, initializing Einitial, Efinal, focusArea {{{
-castDetector::castDetector(double Ei, double Ef, double area, double oeff): Einitial(Ei), Efinal(Ef), focusArea(area),opticsEfficiency(oeff)
+castDetector::castDetector(double Ei, double Ef, double focusarea, double oeff): Einitial(Ei), Efinal(Ef), focusArea(focusarea),opticsEfficiency(oeff)
 { 
     cout << Einitial <<endl ;
     for(int i=0;i<EFF_POINTS;i++)

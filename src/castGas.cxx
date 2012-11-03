@@ -34,7 +34,8 @@ double castGas::getPhotonMass(double pressure,double angle){
 } // }}}
 
 //getGasDensity(double pressure, double angle) return the density in (gr*cm-3) inside the coldbore type 0 for 4He(ideal gas); type 1 for 3He HW (Jaime's formula) and type 2 for CW (Jaime's formula) {{{
-double castGas::getGasDensity(double pressure,double angle){
+double castGas::getGasDensity(double pressure,double angle)
+{
     // Formulas are from Jaime(same as Juanan and Theodoros)
     // ***ANGLE
 
@@ -59,8 +60,8 @@ double castGas::getGasDensity(double pressure,double angle){
 } // }}}
 
 //getMagnetLength(double pressure,double angle) return the magnet lengt(m) for a given pressure inside de Coldbore {{{
-double castGas::getMagnetLength(double pressure, double angle){  
-    // TODO: Find correct formulas!
+double castGas::getMagnetLength(double pressure, double angle)
+{
     // ***ANGLE
 
     if(type==0)
@@ -71,7 +72,7 @@ double castGas::getMagnetLength(double pressure, double angle){
     else if (type==2)
         return (861.1-2.1*pressure)*1E-2; // Nuno CFD
         //return 7.82; // Jaime
-    else 
+    else
         return 0;
 
 } // }}}

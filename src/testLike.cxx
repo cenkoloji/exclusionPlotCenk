@@ -149,24 +149,30 @@ int main( int argc, char *argv[])
 
     char tmp[256];
     sprintf( tmp, "%s/aM%lf.txt",outputPath,ma);
-    FILE *fg = fopen( tmp, "w" );
+    //FILE *fg = fopen( tmp, "w" );
 
-    double gL4;
+    double gL4 = 0.0;
 
-    double gRange[]={-30000,10000.}; //Ranges to plot gl4
     gL4=like->GetgL4(ma, vecExposure,vecTracking);
+    //double gRange[]={-30000,10000.}; //Ranges to plot gl4
     //like->plot_gL4(ma, vecExposure,vecTracking,50,gRange);
 
     cout << "   ma:" << ma << endl;
     cout << "   gL4:" << gL4 << "*10^(-40)" << endl;
     cout << "=> gL:" << std::sqrt(std::sqrt(gL4)) << "*10^(-10)" << endl;
 
+
+    char outFileName[256];      // File name of output
+    ofstream outFile;           // file object to write
+    sprintf(outFileName,"%s/ma/%lf.txt",outputPath,ma);
+    outFile.open(outFileName);
+
+    outFile << ma << "\t" << gL4 << "\t" <<  endl;
     //fprintf( fg, "%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n", ma,sqrt(sqrt(gL4)),gL4,minGL4,sigmaLeft,sigmaRight);
     //fflush( fg );
     //printf( "ma: %lf\tgL: %lf\tgL4: %lf\tMingL4: %lf\tsigmaL: %lf\tsigmaR: %lf\n", ma,sqrt(sqrt(gL4)), gL4,minGL4,sigmaLeft,sigmaRight);
 
-    //fclose(fg);
+    outFile.close();
 
     return 0;
 }
-
