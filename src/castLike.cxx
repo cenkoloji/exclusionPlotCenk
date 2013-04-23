@@ -30,6 +30,7 @@ castLike::castLike(castConversion *cconv, castMagnet *cmag, castGas *cgas, castD
     gas=cgas;
     gasTypes = 0;
     sprintf(outputPath,"./"); //TODO
+    nGamma = 0;
 
     printf("Number of detectors %d\n",ndetectors);
 }// }}}
@@ -39,7 +40,7 @@ castLike::~castLike(){}
 double castLike::GetNgammaCounts(double ma, const vector<castExposure> vecExp[])// return the total expected number of counts for a axion mass (eV), uses as input the exposure in a tree {{{
 {
 
-    double nGamma=0,E0,Ef; //,mgammaCount;
+    double E0,Ef; //,mgammaCount;
     int nbins;
 
     for(int d= 0;d<ndetectors;d++)
@@ -94,7 +95,7 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
     printf("Axion mass %.4f\n",ma);
 
     // Get the total expected counts
-    double nGamma = GetNgammaCounts(ma,vecExp);
+    GetNgammaCounts(ma,vecExp);
     cout << "nGamma: " << nGamma <<endl ;
 
 
@@ -129,7 +130,7 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
     //If it takes more iterations than the  CONVERGENVE limit for k to be less than 4.5E-5,(max 5000 iteration), the process is stopped.
     //
     //Think like this: If in only few iterations you have K<4.5E-5, it means you have really little amount of points. By decreasing the step size, you are finding the optimal resolution,
-    //where you have as much points before the K goes as low.
+    //where you have as much points before the K goes as low, so you can calculate integral more accurately
     //
     //Loop is ended if the number of iterations with same step size passed the convergence limit
     do
@@ -179,7 +180,7 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
             }
 
             chi[j]  = term1 + term2;
-            cout<<"\tj: " << j<< ",  g: " << g4 << ",  chi[j] - chi[0]: "<< chi[j] - chi[0] << "  term1,2: " << term1<<", "<< term2 <<  "    chi = " << chi[j] <<  "    exp(chi) = " << std::exp(chi[j]) << "    exp(chi-chi0) = " << std::exp(chi[j]-chi[0]) << endl;
+            //cout<<"\tj: " << j<< ",  g: " << g4 << ",  chi[j] - chi[0]: "<< chi[j] - chi[0] << "  term1,2: " << term1<<", "<< term2 <<  "    chi = " << chi[j] <<  "    exp(chi) = " << std::exp(chi[j]) << "    exp(chi-chi0) = " << std::exp(chi[j]-chi[0]) << endl;
 
             if (writeToFile)
             {
@@ -190,14 +191,14 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
             if(j%1000==0)
             {
                 if (j!= 0)
-                    //cout<<"j: " << j<< ",  g: " << g4 << ",  chi[j] - chi[0]: "<< chi[j] - chi[0] << "  term1,2: " << term1<<", "<< term2 <<  "    chi = " << chi[j] <<  "    exp(chi) = " << std::exp(chi[j]) << "    exp(chi-chi0) = " << std::exp(chi[j]-chi[0]) << endl;
+                    cout<<"j: " << j<< ",  g: " << g4 << ",  chi[j] - chi[0]: "<< chi[j] - chi[0] << "  term1,2: " << term1<<", "<< term2 <<  "    chi = " << chi[j] <<  "    exp(chi) = " << std::exp(chi[j]) << "    exp(chi-chi0) = " << std::exp(chi[j]-chi[0]) << endl;
                     cout << "";
             }
 
             if( chi[j] - chi[0] < -10 )
             {
                 nChi = j;
-                cout<<"j: " << j<< ",  g: " << g4 << ",  chi[j] - chi[0]: "<< chi[j] - chi[0] << "  term1,2: " << term1<<", "<< term2 <<  "    chi = " << chi[j] <<  "    exp(chi) = " << std::exp(chi[j]) << "    exp(chi-chi0) = " << std::exp(chi[j]-chi[0]) << endl;
+                cout<<"** j: " << j<< ",  g: " << g4 << ",  chi[j] - chi[0]: "<< chi[j] - chi[0] << "  term1,2: " << term1<<", "<< term2 <<  "    chi = " << chi[j] <<  "    exp(chi) = " << std::exp(chi[j]) << "    exp(chi-chi0) = " << std::exp(chi[j]-chi[0]) << endl;
                 break;
             }
 

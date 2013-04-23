@@ -1,3 +1,9 @@
+25-10-2012 Cenk Yildiz <cenk.yildiz@cern.ch>
+	* Some time ago, all classes were cleaned
+	* Removed ROOT stuff, now reading exposure and counts via vectors
+	* Made a nice clean makefile
+	* sample program is in src/testLike.cxx
+
 28-10-2012 Cenk Yildiz <cenk.yildiz@cern.ch>
 	* Cleaned all methods in castExposure. Pushing the new commit
 	* This version still uses Trees, will be replaced with vector in new version

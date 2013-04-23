@@ -48,6 +48,7 @@ class castLike// : public TObject
                 char outputPath[256];
 		int ndetectors;
 		bool gasTypes;
+                double nGamma;      //nGamma. Calculated by GetNgammaCounts
 
 		//readGasTypes for combined analysis 2008+2010 gaps can change inside the likelihood the type of gas
                 // For 2008, keep as 0

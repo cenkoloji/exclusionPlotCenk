@@ -54,7 +54,6 @@ int main( int argc, char *argv[])
     cout << "Output Path: " << outputPath  <<endl ;
     // }}}
 
-
     //castMagnet instance
     cout << "\nCreating magnet instance..." <<endl ;
     castMagnet *mag = new castMagnet();
@@ -62,7 +61,7 @@ int main( int argc, char *argv[])
 
     //castDetector instances, eff file and initialization of each instance {{{
 
-    int ndetectors = 2;
+    int ndetectors = 3;
     char mMEffFile[256];
     char softwareEfficiencyFile[256];
     sprintf(mMEffFile,"%s/mMEfficiency.txt",inputPath); // TODO: Change
@@ -149,7 +148,6 @@ int main( int argc, char *argv[])
 
     char tmp[256];
     sprintf( tmp, "%s/aM%lf.txt",outputPath,ma);
-    //FILE *fg = fopen( tmp, "w" );
 
     double gL4 = 0.0;
 
@@ -158,6 +156,7 @@ int main( int argc, char *argv[])
     //like->plot_gL4(ma, vecExposure,vecTracking,50,gRange);
 
     cout << "   ma:" << ma << endl;
+    cout << "   nGamma:" << like->nGamma << endl;
     cout << "   gL4:" << gL4 << "*10^(-40)" << endl;
     cout << "=> gL:" << std::sqrt(std::sqrt(gL4)) << "*10^(-10)" << endl;
 
@@ -167,10 +166,7 @@ int main( int argc, char *argv[])
     sprintf(outFileName,"%s/ma/%lf.txt",outputPath,ma);
     outFile.open(outFileName);
 
-    outFile << ma << "\t" << gL4 << "\t" <<  endl;
-    //fprintf( fg, "%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n", ma,sqrt(sqrt(gL4)),gL4,minGL4,sigmaLeft,sigmaRight);
-    //fflush( fg );
-    //printf( "ma: %lf\tgL: %lf\tgL4: %lf\tMingL4: %lf\tsigmaL: %lf\tsigmaR: %lf\n", ma,sqrt(sqrt(gL4)), gL4,minGL4,sigmaLeft,sigmaRight);
+    outFile << ma << "\t" << like->nGamma << "\t" << gL4 << "\t" <<  endl;
 
     outFile.close();
 
