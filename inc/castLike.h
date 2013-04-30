@@ -66,6 +66,9 @@ class castLike// : public TObject
                 //This function calculates the minimun value for gL4 for a given axion mass
 		//double GetMinLike(double ma,TTree *expTree[],TTree *tckTree[],TTree &gL4Tree, double g4,double &sigmaLeft,double &sigmaRight);
 
+                //This function finds maximum likelihood and shape of the curve for sigmas 
+                double GetMaxLike(double ma, const vector<castExposure> vecExp[],const vector<castTracking> vecTrk[], double g4max, bool writeToFile=false);
+
                 //Integration over the likelihood for different gL
 		double IntegrateChi( double *chi, int n );
 

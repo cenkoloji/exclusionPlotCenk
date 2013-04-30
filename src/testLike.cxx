@@ -1,4 +1,4 @@
-//Trial program to test castLike class
+//Trial program to test castLike class 
 
 #include <iostream>
 #include <fstream>
@@ -44,7 +44,7 @@ int main( int argc, char *argv[])
 
     cout << "\nStarting Limit Calculation for 2008 data with ma= " << ma <<endl ;
 
-    char namePrefix[]={'1','2'}; // Name prefix for files of different detectors
+    char namePrefix[]={'1','2','3'}; // Name prefix for files of different detectors
 
     //Setting Paths {{{
     char outputPath[256],inputPath[256];
@@ -95,7 +95,8 @@ int main( int argc, char *argv[])
 
     for(int i=0;i<ndetectors; i++)
     {
-        sprintf(expFileName,"%s/pressureExposureSunset%c.txt",inputPath,namePrefix[i]);
+        
+        sprintf(expFileName,"%s/2008tckInfoSunset%c_OUT.txt",inputPath,namePrefix[i]);
         expFile.open(expFileName);  // associate with a file
         cout << expFileName << endl;
 
@@ -104,9 +105,14 @@ int main( int argc, char *argv[])
 
         for (int j = 0; expFile.good(); j++)
         {
-            expFile >> exp.pressure >> exp.timeExp;
+
+            expFile >> exp.countNo >> exp.ntrack >> exp.nstep >> exp.labviewtime >> exp.timeExp >> exp.angle >> exp.tmag >> exp.pressure >> exp.density;
+
+            //Converting density from kg/m3 to g/cm3
+            exp.density = exp.density * 1E-3;
+
             //if (exp.timeExp!= 0)
-            //    cout << exp.pressure << endl;
+                //cout << "dens: " << exp.density << ", expTime: " << exp.timeExp << endl;
             vecExposure[i].push_back(exp);
         }
 
@@ -121,8 +127,12 @@ int main( int argc, char *argv[])
 
         for (int j = 0; trkFile.good(); j++)
         {
-            trkFile >> trk.pressure >> trk.energy >> trk.bckLevel ;
-            //cout << trk.pressure <<" " << trk.energy <<  " " << trk.bckLevel << endl;
+
+            trkFile >> trk.timestamp >> trk.energy >> trk.density >> trk.bckLevel >> trk.angle >> trk.tmag >> trk.pressure;
+
+            trk.density = trk.density * 1E-3;
+
+            cout <<" Dens: " <<  trk.density <<", En: " << trk.energy <<  ", bck: " << trk.bckLevel << endl;
             vecTracking[i].push_back(trk);
         }
 
@@ -152,14 +162,15 @@ int main( int argc, char *argv[])
     double gL4 = 0.0;
 
     gL4=like->GetgL4(ma, vecExposure,vecTracking);
-    //double gRange[]={-30000,10000.}; //Ranges to plot gl4
-    //like->plot_gL4(ma, vecExposure,vecTracking,50,gRange);
+    //double gRange[]={-300000,30000.}; //Ranges to plot gl4
+    //like->plot_gL4(ma, vecExposure,vecTracking,10000,gRange);
+
+    like->GetMaxLike(ma, vecExposure, vecTracking, gL4, 0);
 
     cout << "   ma:" << ma << endl;
     cout << "   nGamma:" << like->nGamma << endl;
     cout << "   gL4:" << gL4 << "*10^(-40)" << endl;
     cout << "=> gL:" << std::sqrt(std::sqrt(gL4)) << "*10^(-10)" << endl;
-
 
     char outFileName[256];      // File name of output
     ofstream outFile;           // file object to write

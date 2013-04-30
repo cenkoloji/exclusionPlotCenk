@@ -46,19 +46,19 @@ class castConversion// : public TObject
         castGas *gas;       //The parameters of the gas
 
         //Probability of conversion for a axion mass (eV), a energy (keV), pressure(mbar) and angle(deg)
-        double ConversionProbability(double ma, double Ea, double press, double angle = 0.0);
+        double ConversionProbability(double ma, double Ea, double pressure, double density, double angle = 0.0);
 
         //return the normalized factor for press(mbar), angle(deg)
         double CalculateNormalizedFactor(double press,double angle = 0.0);
 
-        //absortion coefficient factor for a pressure and a energy in the magnet (energy in keV and p in mbar)
-        double AbsorptionCoeff(double en, double p,double angle = 0.0);
+        //absortion coefficient factor for a pressure and a energy in the magnet (energy in keV and density in g/cm3)
+        double AbsorptionCoeff(double en, double density,double angle = 0.0);
 
         //Axion flux cm-2 s-1 keV-1 (energy in eV)
         double getAxionFlux( double e );
 
         //Expected number of counts for a energy range (keV) a axion mass (eV) a expected mgamma (eV) and the exposure time (seconds) 
-        double ExpectedNumberOfCounts( double Ei, double Ef, double ma, double mgamma, double time );
+        double ExpectedNumberOfCounts( double Ei, double Ef, double ma, double pressure, double density, double time );
 
         //ClassDef(castConversion,1)
 };

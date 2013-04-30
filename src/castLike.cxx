@@ -69,7 +69,7 @@ double castLike::GetNgammaCounts(double ma, const vector<castExposure> vecExp[])
                 nGamma +=   det[d]->getDetEfficiency((E0+Ef)/2.)
                           * det[d]->getOpticsEfficiency()
                           * mag->getAreaCB()
-                          * conv->ExpectedNumberOfCounts(E0,Ef,ma,vecExp[d][i].pressure,vecExp[d][i].timeExp);
+                          * conv->ExpectedNumberOfCounts(E0,Ef,ma,vecExp[d][i].pressure,vecExp[d][i].density,vecExp[d][i].timeExp);
                 //if(i==)cout<<E0<<"  "<<Ef<<"   "<<nGamma<<endl;
             }
         }
@@ -153,7 +153,6 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
                 // Summing the contribution of each count
                 for(int i =0; i<nCounts;i++)
                 {
-
                     if(gasTypes)
                         gas->setType(vecTrk[d][i].gasType);
 
@@ -171,10 +170,11 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
                     }
 
                     double bcklevel = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
-                    double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure, 1.0 );
+                    double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].density, 1.0 );
                     term2+=  std::log ( bcklevel + g4 * expCounts );
 
                     //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;
+
                 }
 
             }
@@ -225,7 +225,7 @@ double castLike::plot_gL4(double ma, const vector<castExposure> vecExp[], const 
 {
 
     double g4,E,E0,Ef;
-    double chi[20000];//,mgammaCount;   // chi := -1/2 Chi**2
+    double chi[MAX_ITERATIONS];//,mgammaCount;   // chi := -1/2 Chi**2
     int nChi,nCounts;
 
     ofstream outFileValues;
@@ -268,7 +268,7 @@ double castLike::plot_gL4(double ma, const vector<castExposure> vecExp[], const 
                 if(gasTypes)
                     gas->setType(vecTrk[d][i].gasType);
 
-                //mgammaCount = gas->GetPhotonMass(vecTrk[d][i]->pressure);
+                //mgammaCount = gas->GetPhotonMass(vecTrk[d][i].density);
                 //if(TMath::Abs(mgammaCount-ma)>0.02)continue;
 
                 // Finding the relevant energy  bin to calculate expected number of photons
@@ -282,8 +282,8 @@ double castLike::plot_gL4(double ma, const vector<castExposure> vecExp[], const 
                 }
 
                 double bcklevel = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
-                double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure, 1.0 );
-                term2+=  std::log ( bcklevel + g4 * expCounts );
+                double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].density, 1.0 );
+                term2+=  std::log ( std::abs( bcklevel + g4 * expCounts ) );
 
                 //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;
             }
@@ -293,6 +293,7 @@ double castLike::plot_gL4(double ma, const vector<castExposure> vecExp[], const 
         chi[j]  = term1 + term2;
         cout<<"\tj: " << j<< ",  g: " << g4 << ",  chi[j] - chi[0]: "<< chi[j] - chi[0] << "  term1,2: " << term1<<", "<< term2 <<  "    chi = " << chi[j] <<  "    exp(chi) = " << std::exp(chi[j]) << "    exp(chi-chi0) = " << std::exp(chi[j]-chi[0]) << endl;
 
+        //Header:   j   g4      chi[j] - chi[0]      term1      term2       chi[j]      std::exp(chi[j])    std::exp(chi[j]-chi[0])
         outFileValues << std::setprecision(9);
         outFileValues   << j<< "\t" << g4 << "\t"<< chi[j] - chi[0] << "\t"
           << term1<<"\t"<< term2 <<"\t" << chi[j] <<  "\t" << std::exp(chi[j])
@@ -361,194 +362,132 @@ void castLike::Show() //{{{
 
 }//}}}
 
-/*
-//I don't use it for now. I don't really care for minimum
-//GetMinLike(double ma,TTree *expTree[],TTree *tckTree[],TTree &gL4Tree) this function try to obtain the value of gL4 that minimize the likelihood, also try to obtain the curve (under development) {{{
-double castLike::GetMinLike(double ma,TTree *expTree[],TTree *tckTree[],TTree &gL4Tree,double g4,double &sigmaLeft,double &sigmaRight)
+//TODO: Make this right
+double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const vector<castTracking> vecTrk[], double g4max, bool writeToFile)//This function finds maximum likelihood and shape of the curve for sigmas {{{
 {
 
-double g,E,E0,Ef,minChi;
-double chi0,chi,j,prevChi;//,mgammaCount;
-int nCounts;
+    double g4Step = 10000., g4, E,E0,Ef;
+    double chi,prevChi,chi0;//,mgammaCount;   // chi := -1/2 Chi**2
+    int nChi,nCounts;
+    int iterations;
 
-castTracking *tck = new castTracking();
-printf("Axion mass %lf\n",ma);
+    cout << "Trying to find maximum" << endl;
+    cout << "======================" << endl;
 
-double nGamma = GetNgammaCounts(ma,expTree);
-TBranch *branch;
+    // Get the total expected counts
+    GetNgammaCounts(ma,vecExp);
+    cout << "nGamma: " << nGamma <<endl ;
 
-double mingL4,minLike=1000.;
+    double range[2];
+    double maxGl4;
+    double like;
+    double maxLike = 1000;
+    g4Step = g4max*1e-3;
 
-int iterations=0;
+    range[0] = -1E10;
+    range[1] = g4max;
 
-double gL4Limit[2];
-gL4Limit[0]=-1E9;
-gL4Limit[1]=g4;
+    ofstream outFileValues;
+    if (writeToFile)
+    {
+        char fnameValues[256];
+        sprintf(fnameValues,"%s/%.4f_sigmas",outputPath,ma);
+        cout << fnameValues<< endl;
+        outFileValues.open(fnameValues);
+    }
 
-double g4Step = g4/1000.;
+    double term2 = 0;
+    double term1;
+    double j;
 
-cout<<"Searching in ranges ["<<gL4Limit[0]<<" - "<<gL4Limit[1]<<"]"<<endl;
-cout<<"Step "<<g4Step<<endl;
-CASTUtils *ut = new CASTUtils();
-gL4Tree.Branch("like",ut);
+    //Getting maximum (going back from g4 limit)
+    while (g4Step > g4max*1e-5 && iterations < MAX_ITERATIONS)
+    {
 
-while(g4Step>g4*1e-8&&iterations<1000000){
-j=0;
-	while(g>gL4Limit[0]){
-	
-	g=gL4Limit[1]+j* g4Step;
-	chi = -1.0 * g * nGamma;
-		
-		for(int d =0;d<ndetectors;d++){
-		branch=tckTree[d]->GetBranch("tck");
-		branch->SetAddress(&tck);
-		nCounts=branch->GetEntries();
-		//printf("nCounts %d\n",d,nCounts);
-			for(int i =0; i<nCounts;i++){
-			branch->GetEvent(i);
-			if(gasTypes)gas->SetType(tck->gasType);
-			//mgammaCount = gas->GetPhotonMass(tck->pressure);
-				//if(TMath::Abs(mgammaCount-ma)>0.02)continue;
-				for(E=det[d]->getEinitial();E<det[d]->getEfinal();E+=0.5){
-					if((tck->energy)>E&&(tck->energy)<E+0.5){
-					E0=E;
-					Ef= E+0.5;
-					}
-				}
-			//printf("%lf  %lf  %lf\n",tck->energy,E0,Ef);
-			chi+= TMath::Log(TMath::Abs(tck->bckLevel*det[d]->getFocusArea()*(Ef-E0) + g * det[d]->getDetEfficiency(tck->energy) * det[d]->getOpticsEfficiency()*mag->getACB()* conv->ExpectedNumberOfCounts( E0, Ef, ma, tck->pressure, 1.0 )));
-			//printf("Eff %lf\n",det[d]->getDetEfficiency(tck->energy));
-			}
-		}
-		if(j==0)prevChi=chi;
-		if(iterations==0)chi0=chi;
-		ut->gL4=g;
-		ut->Like=chi0-chi;
-		gL4Tree.Fill();
-		//cout<<g<<"  "<<chi<<"  "<<prevChi<<"  "<<chi-prevChi<<endl;
-		if(ut->Like<minLike){mingL4=g;minLike=ut->Like;}
-		if((ut->Like-minLike)>0.1)break;
-		
-		if((ut->Like-minLike)>0)cout<<g<<"  "<<ut->Like-minLike<<endl;
-		
-		j--;
-		iterations++;
-	}
-gL4Limit[1]=mingL4+5.*g4Step;
-gL4Limit[0]=mingL4-5.*g4Step;
-cout<<"Searching in ranges ["<<gL4Limit[0]<<" - "<<gL4Limit[1]<<"]"<<endl;
-g4Step=g4Step/5.;
-cout<<"Step "<<g4Step<<endl;
-}
-cout<<"Iterations "<<iterations<<endl;
-printf("MingL4 %e\n",mingL4);
+        j = 0;
 
-g=mingL4;
-chi = -1.0 * g * nGamma;
+        while (g4 > range[0])
+        {
 
-	for(int d =0;d<ndetectors;d++){
-	branch=tckTree[d]->GetBranch("tck");
-	branch->SetAddress(&tck);
-	nCounts=branch->GetEntries();
-	//printf("nCounts %d\n",d,nCounts);
-		for(int i =0; i<nCounts;i++){
-		branch->GetEvent(i);
-		if(gasTypes)gas->SetType(tck->gasType);
-		//mgammaCount = gas->GetPhotonMass(tck->pressure);
-			//if(TMath::Abs(mgammaCount-ma)>0.02)continue;
-			for(E=det[d]->getEinitial();E<det[d]->getEfinal();E+=0.5){
-				if((tck->energy)>E&&(tck->energy)<E+0.5){
-				E0=E;
-				Ef= E+0.5;
-				}
-			}
-		//printf("%lf  %lf  %lf\n",tck->energy,E0,Ef);
-		chi+= TMath::Log(TMath::Abs(tck->bckLevel*det[d]->getFocusArea()*(Ef-E0) + g * det[d]->getDetEfficiency(tck->energy) * det[d]->getOpticsEfficiency()*mag->getACB()* conv->ExpectedNumberOfCounts( E0, Ef, ma, tck->pressure, 1.0 )));
-		//printf("Eff %lf\n",det[d]->getDetEfficiency(tck->energy));
-		}
-	}
-g4Step=g4Step*20000.;
-minChi=chi;
-j=0;
-while((minChi-chi)<0.5){
-	g=mingL4+j* g4Step;
-	chi = -1.0 * g * nGamma;
-	
-		for(int d =0;d<ndetectors;d++){
-		branch=tckTree[d]->GetBranch("tck");
-		branch->SetAddress(&tck);
-		nCounts=branch->GetEntries();
-		//printf("nCounts %d\n",d,nCounts);
-			for(int i =0; i<nCounts;i++){
-			branch->GetEvent(i);
-			if(gasTypes)gas->SetType(tck->gasType);
-			//mgammaCount = gas->GetPhotonMass(tck->pressure);
-				//if(TMath::Abs(mgammaCount-ma)>0.02)continue;
-				for(E=det[d]->getEinitial();E<det[d]->getEfinal();E+=0.5){
-					if((tck->energy)>E&&(tck->energy)<E+0.5){
-					E0=E;
-					Ef= E+0.5;
-					}
-				}
-			//printf("%lf  %lf  %lf\n",tck->energy,E0,Ef);
-			chi+= TMath::Log(TMath::Abs(tck->bckLevel*det[d]->getFocusArea()*(Ef-E0) + g * det[d]->getDetEfficiency(tck->energy) * det[d]->getOpticsEfficiency()*mag->getACB()* conv->ExpectedNumberOfCounts( E0, Ef, ma,tck->pressure, 1.0 )));
-			//printf("Eff %lf\n",det[d]->getDetEfficiency(tck->energy));
-			}
-		}
-		ut->gL4=g;
-		ut->Like=chi0-chi;
-		gL4Tree.Fill();
-		if((int)j%1000==0)cout<<g<<"  "<<(minChi-chi)<<endl;
-		j--;
-}
+	    g4 = range[1] + j * g4Step;
 
-sigmaLeft=mingL4-g;
-chi = minChi;
-j=0;
+            // First term of Chi: g4 * nGamma
+            term1 = -1.0 * g4 * nGamma;
+            term2 = 0.0;
 
-while((minChi-chi)<0.5){
-	g=mingL4+j* g4Step;
-	chi = -1.0 * g * nGamma;
-	
-		for(int d =0;d<ndetectors;d++){
-		branch=tckTree[d]->GetBranch("tck");
-		branch->SetAddress(&tck);
-		nCounts=branch->GetEntries();
-		//printf("nCounts %d\n",d,nCounts);
-			for(int i =0; i<nCounts;i++){
-			branch->GetEvent(i);
-			if(gasTypes)gas->SetType(tck->gasType);
-			//mgammaCount = gas->GetPhotonMass(tck->pressure);
-				//if(TMath::Abs(mgammaCount-ma)>0.02)continue;
-				for(E=det[d]->getEinitial();E<det[d]->getEfinal();E+=0.5){
-					if((tck->energy)>E&&(tck->energy)<E+0.5){
-					E0=E;
-					Ef= E+0.5;
-					}
-				}
-			//printf("%lf  %lf  %lf\n",tck->energy,E0,Ef);
-			chi+= TMath::Log(TMath::Abs(tck->bckLevel*det[d]->getFocusArea()*(Ef-E0) + g * det[d]->getDetEfficiency(tck->energy) * det[d]->getOpticsEfficiency()*mag->getACB()* conv->ExpectedNumberOfCounts( E0, Ef, ma, tck->pressure, 1.0 )));
-			//printf("Eff %lf\n",det[d]->getDetEfficiency(tck->energy));
-			}
-		}
-		ut->gL4=g;
-		ut->Like=chi0-chi;
-		gL4Tree.Fill();
-		if((int)j%1000==0)cout<<g<<"  "<<(minChi-chi)<<endl;
-		j++;
-}
+            // Second term of Chi: ln( bck + g4 * nExpect ) {{{
+            for(int d =0;d<ndetectors;d++)
+            {
+                nCounts=vecTrk[d].size();
+                //printf("nCounts %d",nCounts);
 
-sigmaRight=g-mingL4;
+                // Summing the contribution of each count
+                for(int i =0; i<nCounts;i++)
+                {
+                    if(gasTypes)
+                        gas->setType(vecTrk[d][i].gasType);
 
+                    //mgammaCount = gas->GetPhotonMass(vecTrk[d][i]->pressure);
+                    //if(TMath::Abs(mgammaCount-ma)>0.02)continue;
 
-delete tck;
-delete ut;
+                    // Finding the relevant energy  bin to calculate expected number of photons
+                    for(E=det[d]->getEinitial();E<det[d]->getEfinal();E+=0.5)
+                    {
+                        if((vecTrk[d][i].energy)>E && (vecTrk[d][i].energy)<E+0.5)
+                        {
+                            E0=E;
+                            Ef= E+0.5;
+                        }
+                    }
 
-//if(mingL4>=0)return TMath::Sqrt(TMath::Sqrt(mingL4));
-//else return -1*TMath::Sqrt(TMath::Sqrt(-1*mingL4));
+                    double bcklevel = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
+                    double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].density, 1.0 );
+                    term2+=  std::log ( bcklevel + g4 * expCounts );
 
-return mingL4;
+                    //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;
+
+                }
+
+            }//}}}
+
+            chi = term1 + term2;
+
+            if(j==0) prevChi = chi;
+            if(iterations==0) chi0 = chi;
+            like = chi - chi0;
+
+            //cout<<g<<"  "<<chi<<"  "<<prevChi<<"  "<<chi-prevChi<<endl;
+            if(like>maxLike)
+            {
+                maxGl4=g4;
+                maxLike=like;
+            }
+
+            if((maxLike - like)>0.1)
+                break;
+
+            if((maxLike-like)>0)
+                cout << g4 << "  " << maxLike - like << endl;
+
+            j--;
+            iterations++;
+
+        }
+
+        range[1]=maxGl4+5.*g4Step;
+        range[0]=maxGl4-5.*g4Step;
+        cout<<"Searching in ranges ["<<range[0]<<" - "<<range[1]<<"]"<<endl;
+        g4Step=g4Step/5.;
+        cout<<"Step "<<g4Step<<endl;
+    }
+
+    cout<<"Iterations: "<<iterations<<endl;
+    cout<<"max g4: "<<maxGl4<<endl;
+
+    if (writeToFile)
+        outFileValues.close();
 
 }// }}}
-*/
+
+
 

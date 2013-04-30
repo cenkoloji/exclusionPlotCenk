@@ -1,5 +1,6 @@
 
-- Seperate detector 2 and 3
+
++ Seperate detector 2 and 3
 + Create files with different low and high energy efficiencies as a linear function(using 6 and 3 keV eff)
 + Define good environment variables to define output and input paths
 + Make program based on testLike.cxx and put in ./bin
@@ -11,8 +12,6 @@
 If needed: Theo code:
 /afs/cern.ch/exp/cast/mmM11/wdirsr2010/Analysis2010/Exclusion
 
-
-- Use new input files with density calculated by Theo
 
 
 IGNORE BELOW

@@ -15,27 +15,27 @@ castConversion::castConversion(castMagnet *castMag, castGas *Cg)
 castConversion::~castConversion(){}
 
 //ConversionProbability(double ma, double Ea, double mgamma,double angle) Probability of conversion for a axion mass (eV), a energy (keV), a pressure (mbar) and angle(deg)  {{{
-double castConversion::ConversionProbability(double ma, double Ea, double press,double angle)
+double castConversion::ConversionProbability(double ma, double Ea, double pressure, double density, double angle)
 {
     // ANGLE***
 
-    if( ma == 0.0) return CalculateNormalizedFactor(press);
+    if( ma == 0.0) return CalculateNormalizedFactor(pressure);
 
-    double mgamma = gas->getPhotonMass(press); // ***ANGLE
+    double mgamma = gas->getPhotonMass(density);
 
     double q = (ma*ma - mgamma*mgamma)/2./Ea/1000.0; // in eV
-    double l = gas->getMagnetLength(press); // in m // ***ANGLE
+    double l = gas->getMagnetLength(pressure); // in m // ***ANGLE
     double qL = q * (l * Lconversion); // l*Lconversion is in eV^{-1}
 
-    double Gamma = 100 * AbsorptionCoeff( Ea, press ); // cm-1 to m-1 // ***ANGLE
-    double GammaL = Gamma * gas->getMagnetLength(press);
+    double Gamma = 100 * AbsorptionCoeff( Ea, density); // cm-1 to m-1 // ***ANGLE
+    double GammaL = Gamma * gas->getMagnetLength(pressure);
 
     //if(GammaL==0.0)return CalculateNormalizedFactor()*4*sin(phi/2.)*sin(phi/2.)/(phi*phi);
 
     double MFactor = qL*qL + GammaL*GammaL/4.0; // (qL)^2 + (\Gamma L)^2
     MFactor = 1.0/MFactor;
 
-    double fac = MFactor * CalculateNormalizedFactor(press)*( 1.0 + std::exp(-1.0*GammaL) - 2.0 * std::exp(-0.5 * GammaL) * std::cos(qL) );
+    double fac = MFactor * CalculateNormalizedFactor(pressure)*( 1.0 + std::exp(-1.0*GammaL) - 2.0 * std::exp(-0.5 * GammaL) * std::cos(qL) );
     //Above line was as below in Juanan code. He confirmed it is faulty
     //double sol = MFactor * CalculateNormalizedFactor(mgamma)*( 1.0 + TMath::Exp(-1.0*GammaL) - 2.0 * TMath::Exp(-0.5 * GammaL) * TMath::Cos(phi) );
 
@@ -43,30 +43,29 @@ double castConversion::ConversionProbability(double ma, double Ea, double press,
 
 } // }}}
 
-//CalculateNormalizedFactor() return the normalized factor for the conversion probability ( g10^2(BL/2)^2 ) {{{
-double castConversion::CalculateNormalizedFactor(double press,double angle)
+//CalculateNormalizedFactor(double pressure,double angle) return the normalized factor for the conversion probability ( g10^2(BL/2)^2 ) {{{
+double castConversion::CalculateNormalizedFactor(double pressure,double angle)
 {
     //*** ANGLE
 
     //double tm = lightSpeed / naturalElectron * 1.0e-9; // gev
-    double fac = gas->getMagnetLength(press) * mag->getBMag() * BLconversion / 2.0; 
+    double fac = gas->getMagnetLength(pressure) * mag->getBMag() * BLconversion / 2.0; 
     fac = fac* fac * 1.0e-20; // 10e-20: for normalization g_agamma to g_10
     return fac;
 
 }// }}}
 
-//AbsorptionCoeff(double en, double p, double angle) absortion coefficient factor(cm-1) for a pressure, angle and a energy in the magnet (energy in keV,angle in deg and p in mbar) {{{
-double castConversion::AbsorptionCoeff(double en, double p,double angle)
+//AbsorptionCoeff(double en, double density, double angle) absortion coefficient factor(cm-1) for a density, angle and a energy in the magnet (energy in keV,angle in deg and density in g/cm3) {{{
+double castConversion::AbsorptionCoeff(double en, double density,double angle)
 {
 
-    double densityHe = gas->getGasDensity(p);//in [g/cm^3] // ***ANGLE
     double mu;
 
     //Cenk's implementation (For some reason, Juanan and Javier's used Annika's version, which is worse)
     mu = std::exp(-1.5832 + 5.9195 * std::exp(-0.353808*en)+4.03598*std::exp(-0.970557*en)); // expressed as mu/ro in NIST
 
     //Gamma = mu/ro * density
-    double absorpcoeff = densityHe * mu;
+    double absorpcoeff = density * mu;
     return absorpcoeff; // cm-1 
 
 } // }}}
@@ -80,19 +79,17 @@ double castConversion::getAxionFlux( double en ){
 
 } // }}}
 
-//ExpectedNumberOfCounts( double Ei, double Ef, double ma, double press, double time ) Ei and Ef(keV), ma(eV), press(mbar), time(sec){{{
-double castConversion::ExpectedNumberOfCounts( double Ei, double Ef, double ma, double press, double time )
+//ExpectedNumberOfCounts( double Ei, double Ef, double ma, double pressure, double density, double time ) Ei and Ef(keV), ma(eV), press(mbar), time(sec){{{
+double castConversion::ExpectedNumberOfCounts( double Ei, double Ef, double ma, double pressure, double density, double time )
 {
 
-    //TODO: Step structure can be removed and made single step
     double totalCounts = 0.0;
     double Enrg;
-
     double Estep = 0.05;
     for ( double E = Ei; E <=Ef-Estep; E = E + Estep )
     {
 	    Enrg = E + 0.5 * Estep;
-	    totalCounts +=  ConversionProbability( ma, Enrg, press ) * getAxionFlux( Enrg ) * time * Estep;
+	    totalCounts +=  ConversionProbability( ma, Enrg, pressure,density ) * getAxionFlux( Enrg ) * time * Estep;
 	    //printf("%lf\n",Enrg);
     }
 

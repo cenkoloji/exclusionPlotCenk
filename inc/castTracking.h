@@ -22,12 +22,19 @@ class castTracking// : public TObject
 {
 	public:
 
+//Header of tracking info file
+//timestamp, energy, density, bcklevel, angle, tmag, pcb
+
 		castTracking();
 		~castTracking();
 
-		double pressure;
+		double timestamp;
 		double energy;
+                double density; // kg/m3
 		double bckLevel;
+                double angle;
+                double tmag;
+		double pressure; //P-CB in the center of the cold bore
 		int gasType;
 
 	//ClassDef(CASTTracking,1);

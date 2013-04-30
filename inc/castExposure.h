@@ -23,13 +23,27 @@ using namespace std;
 class castExposure //: public TObject
 {
 	public:
+
+// Header of exposure file
+//countNo	Ntrack	N_step	LabviewTime	TimeExp	angle	Tmag_new	PCBcenter	dens_kg_m3
+
 		castExposure();
 		~castExposure();
 
-		double pressure;
+                // These 4 are not really needed
+                int countNo;
+                int ntrack;
+                int nstep;
+                double labviewtime;
+
+                // These are important
 		double timeExp;
-		int gasType;
                 double angle; // Will be considered later ***ANGLE
+                double tmag;
+		double pressure; //P-CB in the center of the cold bore
+                double density; // kg/m3
+		int gasType;
+
 
 	//ClassDef(castExposure,1);
 

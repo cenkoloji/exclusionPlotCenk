@@ -40,9 +40,8 @@ class castGas// : public TObject
 		void setType(int t){type=t;};//Sets the gas type
 
 		//gets
-		double getPhotonMass(double pressure, double angle = 0.0);//return the effective photon mass in eV
-		double getGasDensity(double pressure, double angle = 0.0);//return the gas density of the gas in gr*cm-3
-		double getMagnetLength(double pressure, double angle = 0.0);//return the magnet lengt for a given pressure inside de Coldbore
+		double getPhotonMass(double density);//return the effective photon mass in eV
+		double getMagnetLength(double pressure, double angle=0.0);//return the magnet lengt for a given pressure inside de Coldbore
 
                 // Function to print information
                 void Show();
