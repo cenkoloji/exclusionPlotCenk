@@ -50,6 +50,10 @@ class castLike// : public TObject
 		bool gasTypes;
                 double nGamma;      //nGamma. Calculated by GetNgammaCounts
 
+                double maxg4;       //maximum of distribution. Calculated by GetMaxLike
+                double sigmaLeft;   //Left Sigma. Calculated by GetMaxLike
+                double sigmaRight;   //Left Sigma. Calculated by GetMaxLike
+
 		//readGasTypes for combined analysis 2008+2010 gaps can change inside the likelihood the type of gas
                 // For 2008, keep as 0
 		void readGasTypes(bool ty){gasTypes=ty;};

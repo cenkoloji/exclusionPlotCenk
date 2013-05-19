@@ -162,14 +162,16 @@ int main( int argc, char *argv[])
     double gL4 = 0.0;
 
     gL4=like->GetgL4(ma, vecExposure,vecTracking);
-    //double gRange[]={-300000,30000.}; //Ranges to plot gl4
-    //like->plot_gL4(ma, vecExposure,vecTracking,10000,gRange);
+    //
 
-    like->GetMaxLike(ma, vecExposure, vecTracking, gL4, 0);
+    like->GetMaxLike(ma, vecExposure, vecTracking, gL4, 1);
+
+    double gRange[]={gL4 - 4*like->sigmaLeft, gL4+ 4*like->sigmaRight}; //Ranges to plot gl4
+    like->plot_gL4(ma, vecExposure,vecTracking,10000,gRange);
 
     cout << "   ma:" << ma << endl;
     cout << "   nGamma:" << like->nGamma << endl;
-    cout << "   gL4:" << gL4 << "*10^(-40)" << endl;
+    cout << "   gL^4:" << gL4 << "*10^(-40)" << endl;
     cout << "=> gL:" << std::sqrt(std::sqrt(gL4)) << "*10^(-10)" << endl;
 
     char outFileName[256];      // File name of output

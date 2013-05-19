@@ -1,4 +1,7 @@
 
+-  Check line 6623 in 2008tckInfoSunset3_OUT.txt
+   138867  265     385     3308140802      149.999 -3.2335 1.83736 35.42222        0.72389
+   *** Time exposure is 149.999 ????!?!?!?!? Ask Theo
 
 + Seperate detector 2 and 3
 + Create files with different low and high energy efficiencies as a linear function(using 6 and 3 keV eff)

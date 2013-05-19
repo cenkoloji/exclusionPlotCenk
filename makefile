@@ -72,7 +72,7 @@ $(CAST_OBJ)/castConversion.o : $(CAST_SRC)/castMagnet.cxx $(CAST_INC)/castMagnet
 	@echo -e "\033[40m\033[0;31m  Compiling castConversion object ........\033[0m"
 	@g++ $(CPPFLAGS) -c $(INC_DIRS) -o $(CAST_OBJ)/castConversion.o $(CAST_SRC)/castConversion.cxx
 
-$(CAST_OBJ)/castLike.o: $(CAST_SRC)/castConversion.cxx $(CAST_INC)/castConversion.h $(CAST_SRC)/castDetector.cxx $(CAST_INC)/castDetector.h $(CAST_SRC)/castGas.cxx $(CAST_INC)/castGas.h $(CAST_SRC)/castExposure.cxx $(CAST_INC)/castExposure.h $(CAST_SRC)/castMagnet.cxx $(CAST_INC)/castMagnet.h $(CAST_SRC)/castTracking.cxx $(CAST_INC)/castTracking.h makefile
+$(CAST_OBJ)/castLike.o: $(CAST_SRC)/castConversion.cxx $(CAST_INC)/castConversion.h $(CAST_SRC)/castDetector.cxx $(CAST_INC)/castDetector.h $(CAST_SRC)/castGas.cxx $(CAST_INC)/castGas.h $(CAST_SRC)/castExposure.cxx $(CAST_INC)/castExposure.h $(CAST_SRC)/castMagnet.cxx $(CAST_INC)/castMagnet.h $(CAST_SRC)/castTracking.cxx $(CAST_INC)/castTracking.h $(CAST_INC)/castLike.h $(CAST_SRC)/castLike.cxx makefile
 	@echo -e "\033[40m\033[0;31m  compiling castLike object ........\033[0m"
 	@g++ $(CPPFLAGS) -c $(INC_DIRS) -o $(CAST_OBJ)/castLike.o $(CAST_SRC)/castLike.cxx
 
