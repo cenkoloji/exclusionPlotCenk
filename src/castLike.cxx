@@ -29,7 +29,7 @@ castLike::castLike(castConversion *cconv, castMagnet *cmag, castGas *cgas, castD
     mag=cmag;
     gas=cgas;
     gasTypes = 0;
-    sprintf(outputPath,"./"); //TODO
+    sprintf(outputPath,"%s/outputs/",getenv("CAST_PATH"));
     nGamma = 0;
 
     printf("Number of detectors %d\n",ndetectors);
@@ -39,6 +39,7 @@ castLike::~castLike(){}
 
 double castLike::GetNgammaCounts(double ma, const vector<castExposure> vecExp[])// return the total expected number of counts for a axion mass (eV), uses as input the exposure in a tree {{{
 {
+    nGamma = 0;
 
     double E0,Ef; //,mgammaCount;
     int nbins;
@@ -95,7 +96,7 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
     printf("Axion mass %.4f\n",ma);
 
     // Get the total expected counts
-    GetNgammaCounts(ma,vecExp);
+    nGamma = GetNgammaCounts(ma,vecExp);
     cout << "nGamma: " << nGamma <<endl ;
 
 
@@ -103,7 +104,7 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
     if (writeToFile)
     {
         char fnameValues[256];
-        sprintf(fnameValues,"%s/%.4f_values",outputPath,ma);
+        sprintf(fnameValues,"%s/values/%lf",outputPath,ma);
         cout << fnameValues<< endl;
         outFileValues.open(fnameValues);
     }
@@ -230,16 +231,18 @@ double castLike::plot_gL4(double ma, const vector<castExposure> vecExp[], const 
 
     ofstream outFileValues;
     char fnameValues[256];
-    sprintf(fnameValues,"%s/%.4f_valuesForPlot",outputPath,ma);
-    cout << fnameValues<< endl;
+    sprintf(fnameValues,"%s/plots/%lf",outputPath,ma);
     outFileValues.open(fnameValues);
 
-    //castTracking *tck = new castTracking();
-    printf("Axion mass %lf\n",ma);
-
     // Get the total expected counts
-    double nGamma = GetNgammaCounts(ma,vecExp);
+    nGamma = GetNgammaCounts(ma,vecExp);
+
+    cout << "Plotting:" << endl;
+    cout << "=========" << endl;
+    cout << fnameValues<< endl;
+    printf("Axion mass %lf\n",ma);
     cout << "nGamma: " << nGamma <<endl ;
+    cout << "Ranges: " << range[0] << " - " << range[1] << endl;
 
     double term2 = 0;
     double term1;
@@ -362,7 +365,6 @@ void castLike::Show() //{{{
 
 }//}}}
 
-//TODO: Make this right
 double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const vector<castTracking> vecTrk[], double g4max, bool writeToFile)//This function finds maximum likelihood and shape of the curve for sigmas {{{
 {
 
@@ -375,7 +377,7 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
     cout << "======================" << endl;
 
     // Get the total expected counts
-    GetNgammaCounts(ma,vecExp);
+    nGamma = GetNgammaCounts(ma,vecExp);
     cout << "nGamma: " << nGamma <<endl ;
 
     double range[2];
@@ -391,8 +393,8 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
     if (writeToFile)
     {
         char fnameValues[256];
-        sprintf(fnameValues,"%s/%.4f_sigmas",outputPath,ma);
-        cout << fnameValues<< endl;
+        sprintf(fnameValues,"%s/sigmas/%lf",outputPath,ma);
+        cout << fnameValues << endl;
         outFileValues.open(fnameValues);
     }
 
@@ -534,6 +536,7 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
 
 
     // Getting left sigma {{{
+    cout << "\nGetting the left sigma" << endl;
     g4Step=g4Step*200.;
     double maxChi=chi ;
     cout << "Max Chi: " << maxChi << endl ;
@@ -584,7 +587,7 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
         }//}}}
 
         chi = term1 + term2;
-        if (j%1000==0) cout << j << ": chi - maxchi" << chi - maxChi << endl;
+        if (j%1000==0) cout << j << ": g4: " <<  g4 << ",  chi - maxchi" << chi - maxChi << endl;
         j--;
     }
 
@@ -594,7 +597,8 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
     //}}}
 
     //Getting right sigma {{{
-    maxChi = chi;
+    cout << "\nGetting the right sigma" << endl;
+    chi = maxChi;
     j=0;
 
     while (maxChi - chi < 0.5)
@@ -642,7 +646,7 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
         }//}}}
 
         chi = term1 + term2;
-        if (j%1000==0) cout << j << ": chi - maxchi" << chi - maxChi << endl;
+        if (j%1000==0) cout << j << ": g4: " <<  g4 << ",  chi - maxchi" << chi - maxChi << endl;
         j++;
     }
 

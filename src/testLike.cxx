@@ -156,8 +156,6 @@ int main( int argc, char *argv[])
     castLike *like = new castLike(conv,mag,gas,det,ndetectors);
     like->Show();
 
-    char tmp[256];
-    sprintf( tmp, "%s/aM%lf.txt",outputPath,ma);
 
     double gL4 = 0.0;
 
@@ -166,7 +164,7 @@ int main( int argc, char *argv[])
 
     like->GetMaxLike(ma, vecExposure, vecTracking, gL4, 1);
 
-    double gRange[]={gL4 - 4*like->sigmaLeft, gL4+ 4*like->sigmaRight}; //Ranges to plot gl4
+    double gRange[]={like->maxg4 - like->sigmaLeft, gL4*2}; //Ranges to plot gl4
     like->plot_gL4(ma, vecExposure,vecTracking,10000,gRange);
 
     cout << "   ma:" << ma << endl;
