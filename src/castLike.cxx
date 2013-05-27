@@ -29,7 +29,7 @@ castLike::castLike(castConversion *cconv, castMagnet *cmag, castGas *cgas, castD
     mag=cmag;
     gas=cgas;
     gasTypes = 0;
-    sprintf(outputPath,"%s/outputs/",getenv("CAST_PATH"));
+    //sprintf(outputPath,"%s/outputs/",getenv("CAST_PATH"));
     nGamma = 0;
 
     printf("Number of detectors %d\n",ndetectors);
@@ -222,7 +222,7 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
 
 }// }}}
 
-double castLike::plot_gL4(double ma, const vector<castExposure> vecExp[], const vector<castTracking> vecTrk[], double g4Step, double *range)//This function implements the likelihood for a given axion; trackings counts and exposure for one or more detectors {{{
+double castLike::plot_gL4(double ma, const vector<castExposure> vecExp[], const vector<castTracking> vecTrk[], double *range)//This function implements the likelihood for a given axion; trackings counts and exposure for one or more detectors {{{
 {
 
     double g4,E,E0,Ef;
@@ -244,15 +244,16 @@ double castLike::plot_gL4(double ma, const vector<castExposure> vecExp[], const 
     cout << "nGamma: " << nGamma <<endl ;
     cout << "Ranges: " << range[0] << " - " << range[1] << endl;
 
+    double step = (range[1] - range[0])/1000.;
     double term2 = 0;
     double term1;
 
-    g4 = range[0];
+    cout << "step: " << step << endl;
 
     // Iterating over g for some values
     for (int j = 0; j < MAX_ITERATIONS; j++)
     {
-        g4 += double(j) * 0.01;
+        g4 = range[0] + double(j)* step;
 
         // First term of Chi: g4 * nGamma
         term1 = -1.0 * g4 * nGamma;
@@ -294,7 +295,7 @@ double castLike::plot_gL4(double ma, const vector<castExposure> vecExp[], const 
         }
 
         chi[j]  = term1 + term2;
-        cout<<"\tj: " << j<< ",  g: " << g4 << ",  chi[j] - chi[0]: "<< chi[j] - chi[0] << "  term1,2: " << term1<<", "<< term2 <<  "    chi = " << chi[j] <<  "    exp(chi) = " << std::exp(chi[j]) << "    exp(chi-chi0) = " << std::exp(chi[j]-chi[0]) << endl;
+        cout<<"\tj: " << j<< ",  g: " << g4 << ",  chi[j] - chi[0]: "<< chi[j] - chi[0] << "  term1,2: " << term1<<", "<< term2 <<  "    chi = " << chi[j] <<  "    exp(chi) = " << std::exp(chi[j]) << "    exp(chi-chi0) = " << std::exp(chi[j]-chi[0]) << ", step:"  << step << endl;
 
         //Header:   j   g4      chi[j] - chi[0]      term1      term2       chi[j]      std::exp(chi[j])    std::exp(chi[j]-chi[0])
         outFileValues << std::setprecision(9);
@@ -308,14 +309,6 @@ double castLike::plot_gL4(double ma, const vector<castExposure> vecExp[], const 
 
     outFileValues.close();
 
-    //double integral = IntegrateChi( chi, nChi );
-    //double gL4 = g4Step * GetLimit( chi, integral );
-
-    //cout<<"gL4: "<<gL4<<endl;
-
-    //delete tck;
-
-    //return gL4;
     return 0;
 
 }// }}}
@@ -359,6 +352,7 @@ void castLike::Show() //{{{
     cout << "================================" <<endl ;
     cout << "Number of detectors:        " << ndetectors  << endl ;
     cout << "Use different gas types?    " << bool(gasTypes)  << endl ;
+    cout << "OutputPath:                 " << outputPath  << endl ;
     cout << "castConversion instance at: " << conv  << endl ;
     cout << "castMagnet instance at:     " << mag  << endl ;
     cout << "castGas instance at:        " << gas  << endl ;
@@ -534,7 +528,69 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
 
     chi = term1 + term2;
 
+/* OLD METHOD
+    //Getting right sigma {{{
+    cout << "\nGetting the right sigma" << endl;
+    chi = maxChi;
+    j=0;
 
+    while (maxChi - chi < 0.5)
+    {
+
+        g4 = maxGl4 + j * g4Step;
+
+        term1 = -1.0 * g4 * nGamma;
+        term2 = 0.0;
+
+        // Second term of Chi: ln( bck + g4 * nExpect ) {{{
+        for(int d =0;d<ndetectors;d++)
+        {
+            nCounts=vecTrk[d].size();
+            //printf("nCounts %d",nCounts);
+
+            // Summing the contribution of each count
+            for(int i =0; i<nCounts;i++)
+            {
+                if(gasTypes)
+                    gas->setType(vecTrk[d][i].gasType);
+
+                //mgammaCount = gas->GetPhotonMass(vecTrk[d][i]->pressure);
+                //if(TMath::Abs(mgammaCount-ma)>0.02)continue;
+
+                // Finding the relevant energy  bin to calculate expected number of photons
+                for(E=det[d]->getEinitial();E<det[d]->getEfinal();E+=0.5)
+                {
+                    if((vecTrk[d][i].energy)>E && (vecTrk[d][i].energy)<E+0.5)
+                    {
+                        E0=E;
+                        Ef= E+0.5;
+                    }
+                }
+
+
+                double bcklevel = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
+                double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].density, 1.0 );
+                term2+=  std::log ( std::abs( bcklevel + g4 * expCounts ) );
+
+                //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;
+
+            }
+
+        }//}}}
+
+        chi = term1 + term2;
+        if (j%1000==0) cout << j << ": g4: " <<  g4 << ",  chi - maxchi" << chi - maxChi << endl;
+        j++;
+    }
+
+    cout << "right: " << g4 << ", chi: " << chi << endl;
+
+    sigmaRight = g4 - maxGl4;
+
+    //}}}
+*/
+
+/* OLD METHOD
     // Getting left sigma {{{
     cout << "\nGetting the left sigma" << endl;
     g4Step=g4Step*200.;
@@ -595,16 +651,26 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
 
     sigmaLeft = maxGl4 - g4;
     //}}}
+*/
 
-    //Getting right sigma {{{
+    // Getting right sigma {{{
     cout << "\nGetting the right sigma" << endl;
-    chi = maxChi;
+
+    g4Step=g4Step*1E7;
+    int dummyg4Step = g4Step;
+    int direction = -1;
+    double maxChi=chi ;
+    g4 = maxGl4;
+    cout << "Max Chi: " << maxChi << endl ;
     j=0;
+    int kk = 0;
 
-    while (maxChi - chi < 0.5)
+
+    while (std::abs(maxChi - chi - 0.5) > (1E-3))
     {
+        kk++;
+        g4 = g4 + g4Step*direction;
 
-        g4 = maxGl4 + j * g4Step;
 
         term1 = -1.0 * g4 * nGamma;
         term2 = 0.0;
@@ -646,14 +712,105 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
         }//}}}
 
         chi = term1 + term2;
-        if (j%1000==0) cout << j << ": g4: " <<  g4 << ",  chi - maxchi" << chi - maxChi << endl;
+
+        cout << "step: " << g4Step <<", dir: " << direction << " " << j << ": g4: " <<  g4 << ", maxchi - chi: " << maxChi - chi << endl;
+        if (direction * (maxChi - chi - 0.5) > 0)
+        {
+            g4Step = g4Step/2.;
+            direction = direction * -1;
+            cout << "Direction Change!" << endl;
+            j = 1;
+            continue;
+        }
+
         j++;
+
     }
 
-    cout << "right: " << g4 << ", chi: " << chi << endl;
+    cout << "kk: " << kk << endl;
+    cout << "step: " << g4Step <<", dir: " << direction << " " << j << ": g4: " <<  g4 << ", maxchi - chi: " << maxChi - chi << endl;
+    cout << "right: " << g4 << ", chi: " <<  chi << endl;
 
     sigmaRight = g4 - maxGl4;
+    //}}}
 
+    // Getting left sigma {{{
+    cout << "\nGetting the left sigma" << endl;
+    //g4Step=dummyg4Step;
+    direction = +1;
+    chi=maxChi;
+    g4 = maxGl4;
+    cout << "Max Chi: " << maxChi << endl ;
+    j=0;
+    kk = 0;
+
+    while (std::abs(maxChi - chi - 0.5) > (1E-3))
+    {
+        kk++;
+        g4 = g4 + g4Step*direction;
+
+
+        term1 = -1.0 * g4 * nGamma;
+        term2 = 0.0;
+
+        // Second term of Chi: ln( bck + g4 * nExpect ) {{{
+        for(int d =0;d<ndetectors;d++)
+        {
+            nCounts=vecTrk[d].size();
+            //printf("nCounts %d",nCounts);
+
+            // Summing the contribution of each count
+            for(int i =0; i<nCounts;i++)
+            {
+                if(gasTypes)
+                    gas->setType(vecTrk[d][i].gasType);
+
+                //mgammaCount = gas->GetPhotonMass(vecTrk[d][i]->pressure);
+                //if(TMath::Abs(mgammaCount-ma)>0.02)continue;
+
+                // Finding the relevant energy  bin to calculate expected number of photons
+                for(E=det[d]->getEinitial();E<det[d]->getEfinal();E+=0.5)
+                {
+                    if((vecTrk[d][i].energy)>E && (vecTrk[d][i].energy)<E+0.5)
+                    {
+                        E0=E;
+                        Ef= E+0.5;
+                    }
+                }
+
+
+                double bcklevel = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
+                double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].density, 1.0 );
+                term2+=  std::log ( std::abs( bcklevel + g4 * expCounts ) );
+
+                //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;
+
+            }
+
+        }//}}}
+
+        chi = term1 + term2;
+
+        cout << "step: " << g4Step <<", dir: " << direction << " " << j << ": g4: " <<  g4 << ", maxchi - chi: " << maxChi - chi << endl;
+        if (direction * (-1) * (maxChi - chi - 0.5) > 0)
+        {
+            g4Step = g4Step/2.;
+            direction = direction * -1;
+            cout << "Direction Change!" << endl;
+            j = 1;
+            continue;
+        }
+
+        j++;
+
+
+    }
+
+    cout << "kk: " << kk << endl;
+    cout << "step: " << g4Step <<", dir: " << direction << " " << j << ": g4: " <<  g4 << ", maxchi - chi: " << maxChi - chi << endl;
+    cout << "left: " << g4 << ", chi: " <<  chi << endl;
+
+    sigmaLeft = maxGl4 - g4;
     //}}}
 
     // May need to write also sigma of g
@@ -664,6 +821,7 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
         outFileValues.close();
 
 }// }}}
+
 
 
 

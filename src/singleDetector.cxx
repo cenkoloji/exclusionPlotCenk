@@ -18,7 +18,7 @@ using std::endl;
 
 int main( int argc, char *argv[])
 {
-
+    char detname;
     double ma=0.38;
 
 
@@ -35,6 +35,7 @@ int main( int argc, char *argv[])
                     switch ( *argv[i] )
                     {
                         case 'a' : ma=atof(argv[i+1]); break;
+                        case 'd' : detname=*argv[i+1]; break;
                         default : return 0;
                     }
                 }
@@ -44,9 +45,9 @@ int main( int argc, char *argv[])
 
     cout << "\nStarting Limit Calculation for 2008 data with ma= " << ma <<endl ;
 
-    char namePrefix[]={'1','2','3'}; // Name prefix for files of different detectors
+    char namePrefix[]={detname}; // Name prefix for files of different detectors
 
-    //Setting Paths {{{
+    //Setting Input Paths {{{
     char inputPath[256];
     sprintf(inputPath,"%s/inputs/",getenv("CAST_PATH"));
     cout << "\nInput Path: " << inputPath  <<endl ;
@@ -59,7 +60,7 @@ int main( int argc, char *argv[])
 
     //castDetector instances, eff file and initialization of each instance {{{
 
-    int ndetectors = 3;
+    int ndetectors = 1;
     char mMEffFile[256];
     char softwareEfficiencyFile[256];
     sprintf(mMEffFile,"%s/mMEfficiency.txt",inputPath); // TODO: Change
@@ -140,10 +141,6 @@ int main( int argc, char *argv[])
 
     // }}}
 
-    // Testing to see if the read values are ok.
-    cout << "pres: " << vecExposure[0][33122].pressure  << " - exp: " << vecExposure[0][33122].timeExp  <<endl ;
-    cout << "pres: " << vecTracking[0][212].pressure  << " - en: " << vecTracking[0][212].energy << " - bck: " << vecTracking[0][212].bckLevel <<endl ;
-
     //castGas instance
     castGas *gas = new castGas(3.0160293,mag,1);
 
@@ -153,10 +150,13 @@ int main( int argc, char *argv[])
     // castLike instance
     castLike *like = new castLike(conv,mag,gas,det,ndetectors);
 
-    sprintf(like->outputPath,"%s/outputs/",getenv("CAST_PATH"));
+    //Setting output path{{{
+    sprintf(like->outputPath,"%s/outputs%c/",getenv("CAST_PATH"),detname);
     cout << "Output Path: " << like->outputPath  <<endl ;
+    //}}}
 
     like->Show();
+
 
     double gL4 = 0.0;
 
