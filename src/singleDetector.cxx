@@ -131,7 +131,7 @@ int main( int argc, char *argv[])
 
             trk.density = trk.density * 1E-3;
 
-            cout <<" Dens: " <<  trk.density <<", En: " << trk.energy <<  ", bck: " << trk.bckLevel << endl;
+            //cout <<" Dens: " <<  trk.density <<", En: " << trk.energy <<  ", bck: " << trk.bckLevel << endl;
             vecTracking[i].push_back(trk);
         }
 

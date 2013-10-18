@@ -81,6 +81,9 @@ class castLike// : public TObject
 
                 //Prints the information about the instance
                 void Show();
+                
+                // Trial to make likelihood calculation a function, problem is passign too many objects to it. It would be better to have these objects as class members
+                double CalculateLikelihood(double ma, double g4, double nGamma, const vector<castExposure> vecExp[],const vector<castTracking> vecTrk[] );
 
 	//ClassDef(CASTLike,1)
 

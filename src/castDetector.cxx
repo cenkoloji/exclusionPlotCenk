@@ -18,7 +18,6 @@ castDetector::castDetector(double Ei, double Ef, double focusarea, double oeff):
         softwareEfficiency[i]=0;
     }
 
-    cout << "smtgDET" <<endl ;
 }// }}}
 
 castDetector::~castDetector( ) { }
@@ -38,10 +37,10 @@ void castDetector::setDetEfficiency(char *effFileName, char *softEffFileName)
     while  (effFile.good()) // while input good and not at EOF
     {
         effFile >> energy >> softwareEfficiency[i];
-        cout << "i: " << i << " En: " << energy << " Eff: " << softwareEfficiency[i] << endl;
+        //cout << "i: " << i << " En: " << energy << " Eff: " << softwareEfficiency[i] << endl;
         i++;
     }
-    cout << "Software Efficiency points : " << i << endl;
+    //cout << "Software Efficiency points : " << i << endl;
 
     effFile.close();         // Closing the file
 
@@ -54,10 +53,10 @@ void castDetector::setDetEfficiency(char *effFileName, char *softEffFileName)
     {
         effFile >> energy >> detEfficiency[i];
         detEfficiency[i] =  detEfficiency[i] * softwareEfficiency[i];
-        cout << "i: " << i << " En: " << energy << " Eff: " << detEfficiency[i] << endl;
+        //cout << "i: " << i << " En: " << energy << " Eff: " << detEfficiency[i] << endl;
         i++;
     }
-    cout << "Efficiency points : " << i << endl;
+    //cout << "Efficiency points : " << i << endl;
 
     effFile.close();         // Closing the file
 

@@ -1,0 +1,5 @@
+Based on code of Juanan.
+
+All ROOT object replaced with pure c++ classes (mostly <vector>)
+
+Clean and nice

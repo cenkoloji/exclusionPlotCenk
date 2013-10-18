@@ -46,7 +46,7 @@ double castLike::GetNgammaCounts(double ma, const vector<castExposure> vecExp[])
 
     for(int d= 0;d<ndetectors;d++)
     {
-	
+
 	nbins=vecExp[d].size();
 
         for(int i=0;i<nbins;i++)
@@ -297,6 +297,8 @@ double castLike::plot_gL4(double ma, const vector<castExposure> vecExp[], const 
         chi[j]  = term1 + term2;
         cout<<"\tj: " << j<< ",  g: " << g4 << ",  chi[j] - chi[0]: "<< chi[j] - chi[0] << "  term1,2: " << term1<<", "<< term2 <<  "    chi = " << chi[j] <<  "    exp(chi) = " << std::exp(chi[j]) << "    exp(chi-chi0) = " << std::exp(chi[j]-chi[0]) << ", step:"  << step << endl;
 
+
+
         //Header:   j   g4      chi[j] - chi[0]      term1      term2       chi[j]      std::exp(chi[j])    std::exp(chi[j]-chi[0])
         outFileValues << std::setprecision(9);
         outFileValues   << j<< "\t" << g4 << "\t"<< chi[j] - chi[0] << "\t"
@@ -528,6 +530,19 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
 
     chi = term1 + term2;
 
+    // Sigma calculation by second derivative{{{
+        double step_sigma = g4Step*15;
+ 
+        double der1r = (CalculateLikelihood(ma, maxg4 + step_sigma, nGamma, vecExp,vecTrk) - CalculateLikelihood(ma, maxg4, nGamma, vecExp,vecTrk))/step_sigma;
+        double der1l = (CalculateLikelihood(ma, maxg4, nGamma, vecExp,vecTrk) - CalculateLikelihood(ma, maxg4-step_sigma, nGamma, vecExp,vecTrk))/step_sigma;
+
+        double der2 = (der1r - der1l)/step_sigma;
+        double sigder = 1./std::sqrt(-der2);
+
+        cout << "der1r: " <<der1r << ", der1l: " << der1l << ", der2: " << der2 << ", sigder: " <<sigder << endl;
+
+    //}}}
+
 /* OLD METHOD
     //Getting right sigma {{{
     cout << "\nGetting the right sigma" << endl;
@@ -658,7 +673,7 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
 
     g4Step=g4Step*1E7;
     int dummyg4Step = g4Step;
-    int direction = -1;
+    int direction = +1;
     double maxChi=chi ;
     g4 = maxGl4;
     cout << "Max Chi: " << maxChi << endl ;
@@ -675,7 +690,7 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
         term1 = -1.0 * g4 * nGamma;
         term2 = 0.0;
 
-        // Second term of Chi: ln( bck + g4 * nExpect ) {{{
+        // Second term of C hi: ln( bck + g4 * nExpect ) {{{
         for(int d =0;d<ndetectors;d++)
         {
             nCounts=vecTrk[d].size();
@@ -737,7 +752,7 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
     // Getting left sigma {{{
     cout << "\nGetting the left sigma" << endl;
     //g4Step=dummyg4Step;
-    direction = +1;
+    direction = -1;
     chi=maxChi;
     g4 = maxGl4;
     cout << "Max Chi: " << maxChi << endl ;
@@ -801,6 +816,13 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
             continue;
         }
 
+        if (g4>maxGl4)
+        {
+            cout << "Only Direction Change!" << endl;
+            direction = direction * -1;
+            continue;
+        }
+
         j++;
 
 
@@ -820,8 +842,54 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
     if (writeToFile)
         outFileValues.close();
 
+    cout << "max: " << maxGl4  << "\t, left:"<< sigmaLeft << "\t, right:"<< sigmaRight << "\t, der:" << sigder<< endl;
+
 }// }}}
 
 
+double castLike::CalculateLikelihood(double ma, double g4, double nGamma, const vector<castExposure> vecExp[],const vector<castTracking> vecTrk[] ) //{{{
+{
+        double term1, term2, chi, E0,E,Ef;
+        int nCounts;
+        term1 = -1.0 * g4 * nGamma;
+        term2 = 0.0;
 
+        // Second term of Chi: ln( bck + g4 * nExpect )
+        for(int d =0;d<ndetectors;d++)
+        {
+            nCounts=vecTrk[d].size();
+            //printf("nCounts %d",nCounts);
+
+            // Summing the contribution of each count
+            for(int i =0; i<nCounts;i++)
+            {
+
+                if(gasTypes)
+                    gas->setType(vecTrk[d][i].gasType);
+
+                //mgammaCount = gas->GetPhotonMass(vecTrk[d][i].density);
+                //if(TMath::Abs(mgammaCount-ma)>0.02)continue;
+
+                // Finding the relevant energy  bin to calculate expected number of photons
+                for(E=det[d]->getEinitial();E<det[d]->getEfinal();E+=0.5)
+                {
+                    if((vecTrk[d][i].energy)>E && (vecTrk[d][i].energy)<E+0.5)
+                    {
+                        E0=E;
+                        Ef= E+0.5;
+                    }
+                }
+
+                double bcklevel = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
+                double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].density, 1.0 );
+                term2+=  std::log ( std::abs( bcklevel + g4 * expCounts ) );
+
+                //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;
+            }
+
+        }
+
+        chi  = term1 + term2;
+        return chi;
+}//}}}
 

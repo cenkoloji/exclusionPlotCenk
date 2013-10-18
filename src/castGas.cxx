@@ -18,7 +18,7 @@ castGas::castGas(double atw, castMagnet *CASTM, int t)
 
 castGas::~castGas(){ }
 
-//getPhotonMass(double density) return the expected mass of the axion in eV type 0 for 4He(ideal gas); type 1 for 3He HW (Jaime's formula) and type 2 for CW (Jaime's formula) {{{
+//getPhotonMass(double density) return the expected mass of the axion in eV type 0 for 4He(ideal gas); type 1 for 3He HW (Jaime's formula) and type 2 for CW (Jaime's formula) for density(gr/cm3) {{{
 double castGas::getPhotonMass(double density){
     // Same as Juanan and Theodoros, In my calculation const is 23.5 (compatible)
 

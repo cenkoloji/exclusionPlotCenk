@@ -1,4 +1,8 @@
 
+-  Understand the drops in nSigmas in negative values.
+    Example: 0.645: max is almost 0, 0.650: max is 50 sigmas less than 0
+    Observation: nsigmas are high in negative direction, for pressures with less exposure time
+
 -  Check line 6623 in 2008tckInfoSunset3_OUT.txt
    138867  265     385     3308140802      149.999 -3.2335 1.83736 35.42222        0.72389
    *** Time exposure is 149.999 ????!?!?!?!? Ask Theo
