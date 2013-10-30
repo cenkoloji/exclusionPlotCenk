@@ -80,7 +80,7 @@ int main(int argc,char **argv)
 
 
     cout << "ma Prob(new) Prob(old) "  << endl;
-    for (double m = ma-0.1; m < ma + 0.1; m = m + 0.001)
+    for (double m = ma-0.01; m < ma + 0.01; m = m + 0.0001)
     {
         double prob = conv->ConversionProbabilityFromProfile(m,energy, pressure, temperature , angle);
 
