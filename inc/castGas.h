@@ -24,11 +24,28 @@ using namespace std;
 
 #define PRESSENTRIES 300000
 
+// Parameters for peng-robinson
+#define  MWT 3.016
+#define  PCRIT 116000
+#define  TCRIT 3.3243
+#define  ACENT -0.474
+
+// For hydrostatic
+#define  GRAVITY  9.81 
+#define  POSPCB  -5 // position of PCB
+#define  PI 3.1415926
+
 class castGas// : public TObject
 {
+
 	public:
 		castGas(double atw, castMagnet *CASTM, int t);
 		~castGas();
+
+                double rgas;
+                double a0;
+                double b0;
+                double k0;
 
 		castMagnet *mag;    //definition of the magnet
 		double atomicwg;    //atomic weight of the buffer gas
@@ -40,11 +57,19 @@ class castGas// : public TObject
 		void setType(int t){type=t;};//Sets the gas type
 
 		//gets
-		double getPhotonMass(double density);//return the effective photon mass in eV
+		double getPhotonMass(double density);//return the effective photon mass in eV from density in g/cm3
 		double getMagnetLength(double pressure, double angle=0.0);//return the magnet lengt for a given pressure inside de Coldbore
 
                 // Function to print information
                 void Show();
+
+
+                double getDensity(double temp, double press); // Calculates density(kg/m3) from temperature(K) and pressure(Pa) (peng-robinson)
+
+                double getPressure(double temp, double density); // Calculates pressure from temperature and density(peng robinson)
+
+                // Hydrostatic pressure difference between some point in the magnet and PCB (which is at -5m)
+                double getHydrostatic(double press, double temp, double x, double angle); //  press(Pa), temp(K), x(m), angle(deg)
 
 		//Double_t GetPhotonPressure(Double_t mgamma);//return the pressure for a expected mgamma in mbar // commented from Juanan
 

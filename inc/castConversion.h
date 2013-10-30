@@ -19,6 +19,7 @@ Date: 22 Oct 2010
 
 #include<castMagnet.h>
 #include<castGas.h>
+#include<castProfile.h>
 
 // I don't use these (They are from Javier-Juanan code)
 //#define PhMeterIneV 5067731.236453719
@@ -47,6 +48,13 @@ class castConversion// : public TObject
 
         //Probability of conversion for a axion mass (eV), a energy (keV), pressure(mbar) and angle(deg)
         double ConversionProbability(double ma, double Ea, double pressure, double density, double angle = 0.0);
+
+
+        //Probability of conversion for a axion mass (eV), Ea energy (keV), pressure(Pa), temp(K) and angle(deg), integrating over density profile
+        double ConversionProbabilityFromProfile(double ma, double Ea, double pressure, double temperature, double angle);
+
+        //Probability of conversion for a axion mass (eV), Ea energy (keV), pressure(Pa), temp(K) and angle(deg), calculating using center density and fixed length
+        double ConversionProbabilityFromLength(double ma, double Ea, double pressure, double temperature, double angle);
 
         //return the normalized factor for press(mbar), angle(deg)
         double CalculateNormalizedFactor(double press,double angle = 0.0);
