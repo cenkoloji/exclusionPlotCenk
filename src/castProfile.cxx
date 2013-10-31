@@ -5,7 +5,7 @@
 #include <cmath>
 
 
-castProfile::castProfile(castGas * cG, double PCB, double Tmag, double angle) :gas(cG), PCB(PCB), Tmag(Tmag), angle(angle) // {{{
+castProfile::castProfile(castGas * cG, double press, double Tmag, double angle, bool pCenter) :gas(cG), press(press), Tmag(Tmag), angle(angle), pCenter(pCenter)  // {{{
 {
 
     lenstart = -4.; //Should be get by a function in castGas
@@ -19,7 +19,18 @@ castProfile::castProfile(castGas * cG, double PCB, double Tmag, double angle) :g
 
     double height = sin(angle*PI/180.) * increment;
 
-    pressure[0] = PCB + gas->getHydrostatic(PCB,Tmag,lenstart,angle);
+    // Getting pressure at start of length, depending on the input being central pressure or PCB
+    if (pCenter)
+    {
+        pressure[0] = press + gas->getHydrostatic(press,Tmag,0,lenstart,angle);
+        //cout << press <<  " " <<  gas->getHydrostatic(press,Tmag,0,lenstart,angle) << endl;
+    }
+    else
+    {
+        pressure[0] = press + gas->getHydrostatic(press,Tmag,lenstart,angle);
+        //cout << press <<  " " <<  gas->getHydrostatic(press,Tmag,lenstart,angle) << endl;
+    }
+
     density[0] = gas->getDensity(Tmag,pressure[0]);
     double phydro;
 
@@ -32,6 +43,7 @@ castProfile::castProfile(castGas * cG, double PCB, double Tmag, double angle) :g
         {   
             centerdensity = density[i];
             centerpressure = pressure[i];
+            //cout << " Center vs Input Press at point " << i << ":  " << centerpressure << " " << press << endl;
         }
         //if (i%100==1) { cout << "L=" <<lenstart + i*increment << ", P=" << pressure[i] << " d=" << density[i] <<" mgamma=" << gas->getPhotonMass(density[i]*1E-3) << " phydro=" << phydro << endl; }
     }

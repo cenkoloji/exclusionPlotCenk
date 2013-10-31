@@ -12,18 +12,14 @@ Date: 28 Oct 2012
 #ifndef _CAST_TRACKING_
 #define _CAST_TRACKING_
 
-//#ifndef _ROOT_TOBJECT_
-//#include <TObject.h>
-//#endif
-
 using namespace std;
 
-class castTracking// : public TObject
+class castTracking
 {
 	public:
 
-//Header of tracking info file
-//timestamp, energy, density, bcklevel, angle, tmag, pcb
+        //Header of tracking info file
+        //timestamp, energy, density, bcklevel, angle, tmag, pcb
 
 		castTracking();
 		~castTracking();
@@ -34,10 +30,8 @@ class castTracking// : public TObject
 		double bckLevel;
                 double angle;
                 double tmag;
-		double pressure; //P-CB in the center of the cold bore
+		double pressure; //pressure in the center of the cold bore, or at PCB (depending on how the file is prepared)
 		int gasType;
-
-	//ClassDef(CASTTracking,1);
 
 };
 #endif

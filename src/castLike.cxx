@@ -48,7 +48,7 @@ double castLike::GetNgammaCounts(double ma, const vector<castExposure> vecExp[])
     {
 
 	nbins=vecExp[d].size();
-
+        cout << nbins << endl;
         for(int i=0;i<nbins;i++)
         {
             //If there is no exposure for a pressure, continue
@@ -70,9 +70,11 @@ double castLike::GetNgammaCounts(double ma, const vector<castExposure> vecExp[])
                 nGamma +=   det[d]->getDetEfficiency((E0+Ef)/2.)
                           * det[d]->getOpticsEfficiency()
                           * mag->getAreaCB()
-                          * conv->ExpectedNumberOfCounts(E0,Ef,ma,vecExp[d][i].pressure,vecExp[d][i].density,vecExp[d][i].timeExp);
+                          * conv->ExpectedNumberOfCounts(E0,Ef,ma,vecExp[d][i].pressure,vecExp[d][i].tmag,vecExp[d][i].angle,vecExp[d][i].timeExp);
+                          //* conv->ExpectedNumberOfCounts(E0,Ef,ma,vecExp[d][i].pressure,vecExp[d][i].density,vecExp[d][i].timeExp);
                 //if(i==)cout<<E0<<"  "<<Ef<<"   "<<nGamma<<endl;
             }
+        cout << i << " " << nGamma << endl;
         }
 
     }
@@ -93,9 +95,10 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
         g4Step=1.E9;
 
     //castTracking *tck = new castTracking();
-    printf("Axion mass %.4f\n",ma);
+    //printf("Axion mass %.4f\n",ma);
 
     // Get the total expected counts
+    cout << "getting nGamma" << endl;
     nGamma = GetNgammaCounts(ma,vecExp);
     cout << "nGamma: " << nGamma <<endl ;
 
@@ -171,7 +174,7 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
                     }
 
                     double bcklevel = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
-                    double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].density, 1.0 );
+                    double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].tmag,vecTrk[d][i].angle, 1.0 );
                     term2+=  std::log ( bcklevel + g4 * expCounts );
 
                     //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;
@@ -286,7 +289,7 @@ double castLike::plot_gL4(double ma, const vector<castExposure> vecExp[], const 
                 }
 
                 double bcklevel = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
-                double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].density, 1.0 );
+                double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].tmag,vecTrk[d][i].angle, 1.0 );
                 term2+=  std::log ( std::abs( bcklevel + g4 * expCounts ) );
 
                 //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;
@@ -441,7 +444,7 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
 
 
                     double bcklevel = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
-                    double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].density, 1.0 );
+                    double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].tmag,vecTrk[d][i].angle, 1.0 );
                     term2+=  std::log ( std::abs( bcklevel + g4 * expCounts ) );
 
                     //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;
@@ -519,7 +522,7 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
 
 
             double bcklevel = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
-            double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].density, 1.0 );
+            double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].tmag,vecTrk[d][i].angle, 1.0 );
             term2+=  std::log ( std::abs( bcklevel + g4 * expCounts ) );
 
             //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;
@@ -717,7 +720,7 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
 
 
                 double bcklevel = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
-                double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].density, 1.0 );
+                double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].tmag,vecTrk[d][i].angle, 1.0 );
                 term2+=  std::log ( std::abs( bcklevel + g4 * expCounts ) );
 
                 //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;
@@ -795,7 +798,7 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
 
 
                 double bcklevel = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
-                double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].density, 1.0 );
+                double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].tmag,vecTrk[d][i].angle, 1.0 );
                 term2+=  std::log ( std::abs( bcklevel + g4 * expCounts ) );
 
                 //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;
@@ -881,7 +884,7 @@ double castLike::CalculateLikelihood(double ma, double g4, double nGamma, const 
                 }
 
                 double bcklevel = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
-                double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].density, 1.0 );
+                double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].tmag,vecTrk[d][i].angle, 1.0 );
                 term2+=  std::log ( std::abs( bcklevel + g4 * expCounts ) );
 
                 //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;

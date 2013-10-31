@@ -127,18 +127,20 @@ double castGas::getHydrostatic(double press, double temp, double x, double angle
 } // }}}
 */
 
-double castGas::getHydrostatic(double press, double temp, double x, double angle) // {{{
+double castGas::getHydrostatic(double PCB, double temp, double x, double angle) // {{{
 {
 
-    // dens(kg/m3) * h(m) * g(m/s2)
+    //double hydro1 = getHydrostatic(PCB, temp, POSPCB, x, angle);
 
+    // dens(kg/m3) * h(m) * g(m/s2)
+    
     double increment = 0.01; //m
 
     double height = sin(angle*PI/180.) * increment;
 
     double density;
     double phydro = 0;
-    double pressure = press;
+    double pressure = PCB;
 
     for (double position = POSPCB; position < x; position = position + increment)
     {
@@ -147,8 +149,20 @@ double castGas::getHydrostatic(double press, double temp, double x, double angle
         pressure = pressure + phydro;
     }
 
+    // cout << hydro1 << " " <<  phydro << " " << hydro1- phydro   << " " << (hydro1 - phydro)*100/phydro  << endl;
     return phydro;
+   
 
+} // }}}
+
+double castGas::getHydrostatic(double press, double temp, double x0, double x1, double angle) // {{{
+{
+
+    // dens(kg/m3) * h(m) * g(m/s2)
+
+    double density = getDensity(temp,press);
+    double height = sin(angle*PI/180.) * ( x1 - x0 );
+    return density * height * GRAVITY;
 
 } // }}}
 

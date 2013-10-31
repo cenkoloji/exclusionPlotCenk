@@ -46,14 +46,13 @@ class castConversion// : public TObject
         castMagnet *mag;    //The parameters of the magnet
         castGas *gas;       //The parameters of the gas
 
-        //Probability of conversion for a axion mass (eV), a energy (keV), pressure(mbar) and angle(deg)
+        //Probability of conversion for a axion mass (eV), a energy (keV), pressure(mbar) and angle(deg) // OLD Method, Deprecated
         double ConversionProbability(double ma, double Ea, double pressure, double density, double angle = 0.0);
 
-
-        //Probability of conversion for a axion mass (eV), Ea energy (keV), pressure(Pa), temp(K) and angle(deg), integrating over density profile
+        //Probability of conversion for a axion mass (eV), Ea energy (keV), pressure(mbar), temp(K) and angle(deg), integrating over density profile
         double ConversionProbabilityFromProfile(double ma, double Ea, double pressure, double temperature, double angle);
 
-        //Probability of conversion for a axion mass (eV), Ea energy (keV), pressure(Pa), temp(K) and angle(deg), calculating using center density and fixed length
+        //Probability of conversion for a axion mass (eV), Ea energy (keV), pressure(mbar), temp(K) and angle(deg), calculating using center density and fixed length
         double ConversionProbabilityFromLength(double ma, double Ea, double pressure, double temperature, double angle);
 
         //return the normalized factor for press(mbar), angle(deg)
@@ -65,8 +64,11 @@ class castConversion// : public TObject
         //Axion flux cm-2 s-1 keV-1 (energy in eV)
         double getAxionFlux( double e );
 
-        //Expected number of counts for a energy range (keV) a axion mass (eV) a expected mgamma (eV) and the exposure time (seconds) 
+        //Expected number of counts for a energy range (keV) a axion mass (eV) a expected mgamma (eV), pressure(mbar) and the exposure time (seconds) 
         double ExpectedNumberOfCounts( double Ei, double Ef, double ma, double pressure, double density, double time );
+
+        //Expected number of counts for a energy range (keV) a axion mass (eV) a expected mgamma (eV), pressure(mbar), temp(K), ang(deg) the exposure time (seconds) 
+        double ExpectedNumberOfCounts( double Ei, double Ef, double ma, double pressure, double temperature, double angle, double time );
 
         //ClassDef(castConversion,1)
 };

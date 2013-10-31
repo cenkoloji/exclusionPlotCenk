@@ -160,7 +160,7 @@ int main( int argc, char *argv[])
 
     double gL4 = 0.0;
 
-    gL4=like->GetgL4(ma, vecExposure,vecTracking);
+    gL4=like->GetgL4(ma, vecExposure, vecTracking);
 
     like->GetMaxLike(ma, vecExposure, vecTracking, gL4, 1);
 

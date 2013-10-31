@@ -49,7 +49,7 @@ double castConversion::ConversionProbabilityFromLength(double ma, double Ea, dou
     int N;
 
     castProfile * profile;
-    profile = new castProfile(gas, pressure, temperature, angle);
+    profile = new castProfile(gas, pressure*100, temperature, angle);
 
     L0 = profile->lenstart;
     L1 = profile->lenend;
@@ -88,7 +88,7 @@ double castConversion::ConversionProbabilityFromProfile(double ma, double Ea, do
     complex<double> sum2 (0.0,0.0);
     int N;
     castProfile * profile;
-    profile = new castProfile(gas, pressure, temperature, angle);
+    profile = new castProfile(gas, pressure*100, temperature, angle);
 
     L0 = profile->lenstart;
     L1 = profile->lenend;
@@ -205,6 +205,26 @@ double castConversion::getAxionFlux( double en ){
 
 } // }}}
 
+//ExpectedNumberOfCounts( double Ei, double Ef, double ma, double pressure, double temperature, double angle, double time ) Ei and Ef(keV), ma(eV), press(mbar), temp(K), angle(deg), time(sec){{{
+double castConversion::ExpectedNumberOfCounts( double Ei, double Ef, double ma, double pressure, double temperature, double angle, double time )
+{
+
+    //cout << "calculating Exp Num count" << endl;
+    double totalCounts = 0.0;
+    double Enrg;
+    double Estep = 0.05;
+    //cout << pressure << " " << temperature  << " " <<angle << " " << endl;
+    for ( double E = Ei; E <=Ef-Estep; E = E + Estep )
+    {
+	    Enrg = E + 0.5 * Estep;
+	    totalCounts +=  ConversionProbabilityFromProfile( ma, Enrg, pressure,temperature,angle ) * getAxionFlux( Enrg ) * time * Estep;
+	    //printf("%lf\n",Enrg);
+    }
+
+    return totalCounts;
+
+} // }}}
+
 //ExpectedNumberOfCounts( double Ei, double Ef, double ma, double pressure, double density, double time ) Ei and Ef(keV), ma(eV), press(mbar), time(sec){{{
 double castConversion::ExpectedNumberOfCounts( double Ei, double Ef, double ma, double pressure, double density, double time )
 {
@@ -222,4 +242,3 @@ double castConversion::ExpectedNumberOfCounts( double Ei, double Ef, double ma, 
     return totalCounts;
 
 } // }}}
-

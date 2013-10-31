@@ -11,12 +11,6 @@
 #ifndef _CASTGAS_
 #define _CASTGAS_
 
-/*
-#ifndef _ROOT_TOBJECT_
-#include <TObject.h>
-#endif
-*/
-
 #include <iostream>
 #include<castMagnet.h>
 
@@ -35,7 +29,7 @@ using namespace std;
 #define  POSPCB  -5 // position of PCB
 #define  PI 3.1415926
 
-class castGas// : public TObject
+class castGas
 {
 
 	public:
@@ -58,7 +52,7 @@ class castGas// : public TObject
 
 		//gets
 		double getPhotonMass(double density);//return the effective photon mass in eV from density in g/cm3
-		double getMagnetLength(double pressure, double angle=0.0);//return the magnet lengt for a given pressure inside de Coldbore
+		double getMagnetLength(double pressure, double angle=0.0);//return the magnet lengt for a given pressure inside de Coldbore,p:mbar
 
                 // Function to print information
                 void Show();
@@ -69,11 +63,10 @@ class castGas// : public TObject
                 double getPressure(double temp, double density); // Calculates pressure from temperature and density(peng robinson)
 
                 // Hydrostatic pressure difference between some point in the magnet and PCB (which is at -5m)
-                double getHydrostatic(double press, double temp, double x, double angle); //  press(Pa), temp(K), x(m), angle(deg)
+                double getHydrostatic(double PCB, double temp, double x, double angle); //  press(Pa), temp(K), x(m), angle(deg)
 
-		//Double_t GetPhotonPressure(Double_t mgamma);//return the pressure for a expected mgamma in mbar // commented from Juanan
-
-		//ClassDef (castGas,1); //artifact
+                // Hydrostatic pressure difference between x0 and x1 (overloaded)
+                double getHydrostatic(double press, double temp, double x0, double x1, double angle);
 
 };
 #endif
