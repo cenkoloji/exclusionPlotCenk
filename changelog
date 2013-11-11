@@ -1,3 +1,13 @@
+11-11-2013 Cenk Yildiz <cenk.yildiz@cern.ch>
+	* many changes, castConfig and castProfile classes added
+	* Next change is totally removing the ConversionProbabilityFromLength
+	and ConversionProbabilityFromProfile functions, and merging them in
+	ConversionProbability function
+
+28-10-2012 Cenk Yildiz <cenk.yildiz@cern.ch>
+	* Cleaned all methods in castExposure. Pushing the new commit
+	* This version still uses Trees, will be replaced with vector in new version
+
 25-10-2012 Cenk Yildiz <cenk.yildiz@cern.ch>
 	* Some time ago, all classes were cleaned
 	* Removed ROOT stuff, now reading exposure and counts via vectors
