@@ -5,13 +5,15 @@
 
 //ClassImp(castConversion)
 
+/*
 //castConversion::castConversion(castMagnet *castMag, castGas *Cg) Constructor with the classes CASTMagnet and CASTGas {{{
-castConversion::castConversion(castMagnet *castMag, castGas *Cg)
+castConversion::castConversion(castMagnet *castMag, castGas *Cg, castProfile * castProf)
 {
     mag = castMag;
     gas = Cg;
+    prof = castProf;
 } // }}} 
-
+*/
 castConversion::~castConversion(){}
 
 //ConversionProbability(double ma, double Ea, double pressure, double density, double angle) Probability of conversion for a axion mass (eV), a energy (keV), a pressure (mbar), density(g/cm3) and angle(deg)  {{{
@@ -48,8 +50,7 @@ double castConversion::ConversionProbabilityFromLength(double ma, double Ea, dou
     double L0,L1,L,dL;
     int N;
 
-    castProfile * profile;
-    profile = new castProfile(gas, pressure*100, temperature, angle);
+    castProfile * profile = new castProfile(gas, pressure*100, temperature, angle,cfg);
 
     L0 = profile->lenstart;
     L1 = profile->lenend;
@@ -87,8 +88,7 @@ double castConversion::ConversionProbabilityFromProfile(double ma, double Ea, do
     double P,d,L0,L1,L,dL,position,mgamma,sum1,q,amplitude,exponent;
     complex<double> sum2 (0.0,0.0);
     int N;
-    castProfile * profile;
-    profile = new castProfile(gas, pressure*100, temperature, angle);
+    castProfile * profile = new castProfile(gas, pressure*100, temperature, angle,cfg);
 
     L0 = profile->lenstart;
     L1 = profile->lenend;

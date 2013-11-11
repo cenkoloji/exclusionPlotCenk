@@ -12,6 +12,7 @@ Date: 28 Oct 2013
 
 #include <iostream>
 #include<castGas.h>
+#include<castConfig.h>
 
 
 class castProfile
@@ -20,10 +21,11 @@ class castProfile
     public:
 
         // PCB(Pa), Tmag(K), angle(deg)
-        castProfile(castGas * cG, double PCB, double Tmag, double angle, bool pCenter=false);
+        castProfile(castGas * cG, double PCB, double Tmag, double angle, castConfig * cfg);
         ~castProfile();
 
         castGas *gas;       //The parameters of the gas
+        castConfig *cfg;    //The config class instant
 
         double press;         //Pressure measured at PCB sensor position or in the center of cold bore in Pascals
         double Tmag;        //Magnet temperature in Kelvins

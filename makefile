@@ -22,7 +22,8 @@ BINARIES =  $(CAST_BIN)/testLike $(CAST_BIN)/singleDetector $(CAST_BIN)/density2
 
 #defining compiling targets
 all: Wellcome castConfig castTracking castExposure castMagnet castDetector castGas castConversion castGas castLike castProfile libCAST programs
-programs: testLike singleDetector density2mass conversionStudy
+#programs: testLike singleDetector density2mass conversionStudy
+programs: conversionStudy
 
 castConversion: $(CAST_OBJ)/castConversion.o
 castDetector: $(CAST_OBJ)/castDetector.o

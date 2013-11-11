@@ -16,6 +16,7 @@
 #include<castGas.h>
 #include<castExposure.h>
 #include<castTracking.h>
+#include<castConfig.h>
 using std::cout;
 using std::endl;
 
@@ -62,16 +63,17 @@ int main(int argc,char **argv)
     //cout <<  pressure << " "<<   angle << " "<<  energy << endl;
     double temperature = 1.8;
 
+    castConfig * cfg = new castConfig("config1.cfg");
+
     //castMagnet instance
     castMagnet *mag = new castMagnet();
     mag->Show();
-
 
     //castGas instance
     castGas *gas = new castGas(3.0160293,mag,1);
 
     //castConversion instance
-    castConversion *conv = new castConversion(mag,gas);
+    castConversion *conv = new castConversion(mag,gas,cfg);
 
     /* Comparing different methods to calculate hydrostatic {{{
     double p2,p3;
@@ -90,8 +92,13 @@ int main(int argc,char **argv)
     // }}} */
 
 
+    if (cfg->pCenter)
+        cout << "pCenter!!!" <<endl ;
+    if (cfg->useProfile)
+        cout << "useProf!!!" <<endl ;
+
     castProfile * profile;
-    profile = new castProfile(gas, pressure, temperature, angle, true);
+    profile = new castProfile(gas, pressure, temperature, angle, cfg);
     double ma = gas->getPhotonMass(profile->centerdensity*1E-3);
     cout << ma << endl;
     cout << "ma Prob(new) Prob(old) "  << endl;
@@ -101,10 +108,6 @@ int main(int argc,char **argv)
         double prob = conv->ConversionProbabilityFromProfile(m,energy, pressure/100., temperature , angle);
 
         cout << m << " " <<prob << " ";
-
-        prob = conv->ConversionProbabilityFromLength(m,energy, pressure/100., temperature , angle);
-
-        cout << prob << endl;
 
         prob = conv->ConversionProbabilityFromLength(m,energy, pressure/100., temperature , angle);
 

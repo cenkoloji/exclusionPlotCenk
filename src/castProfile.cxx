@@ -5,9 +5,10 @@
 #include <cmath>
 
 
-castProfile::castProfile(castGas * cG, double press, double Tmag, double angle, bool pCenter) :gas(cG), press(press), Tmag(Tmag), angle(angle), pCenter(pCenter)  // {{{
+castProfile::castProfile(castGas * cG, double press, double Tmag, double angle, castConfig * cfg) :gas(cG), press(press), Tmag(Tmag), angle(angle), cfg(cfg)  // {{{
 {
 
+    pCenter = cfg->pCenter; // If true, the pressure is central pressure instead of P_CB(at -5m)
     lenstart = -4.; //Should be get by a function in castGas
     lenend = 4.; //Should be get by a function in castGas
     increment = 0.01; // Can be angle+pressure dependent
@@ -20,7 +21,7 @@ castProfile::castProfile(castGas * cG, double press, double Tmag, double angle, 
     double height = sin(angle*PI/180.) * increment;
 
     // Getting pressure at start of length, depending on the input being central pressure or PCB
-    if (pCenter)
+    if (cfg->pCenter)
     {
         pressure[0] = press + gas->getHydrostatic(press,Tmag,0,lenstart,angle);
         //cout << press <<  " " <<  gas->getHydrostatic(press,Tmag,0,lenstart,angle) << endl;
@@ -34,11 +35,14 @@ castProfile::castProfile(castGas * cG, double press, double Tmag, double angle, 
     density[0] = gas->getDensity(Tmag,pressure[0]);
     double phydro;
 
+    // Calculating the pressure and density over the length
     for (int i = 1; i < elements; i++)
     {
         phydro = density[i-1] * height * GRAVITY;
         pressure[i] = pressure[i-1]  + phydro;
         density[i] = gas->getDensity(Tmag,pressure[i]);
+
+        // Getting the center pressure
         if ((i-1)*increment + lenstart <0. && (i)*increment + lenstart >=0.)
         {   
             centerdensity = density[i];
@@ -50,11 +54,11 @@ castProfile::castProfile(castGas * cG, double press, double Tmag, double angle, 
 
 } //}}}
 
-castProfile::~castProfile()
+castProfile::~castProfile() //{{{
 {
     delete []density;
     delete []pressure;
-}
+}//}}}
 
 /*
     //{{{  int method = 2; // Different ways to calculate hydrostatic pressure

@@ -20,6 +20,7 @@ Date: 22 Oct 2010
 #include<castMagnet.h>
 #include<castGas.h>
 #include<castProfile.h>
+#include<castConfig.h>
 
 // I don't use these (They are from Javier-Juanan code)
 //#define PhMeterIneV 5067731.236453719
@@ -40,11 +41,12 @@ class castConversion// : public TObject
 
     public:
 
-        castConversion(castMagnet *castMag, castGas *Cg);
+        castConversion(castMagnet *castMag, castGas *Cg, castConfig * cfg): mag(castMag), gas(Cg), cfg(cfg){};
         ~castConversion();
 
         castMagnet *mag;    //The parameters of the magnet
         castGas *gas;       //The parameters of the gas
+        castConfig *cfg;    //The density profile 
 
         //Probability of conversion for a axion mass (eV), a energy (keV), pressure(mbar) and angle(deg) // OLD Method, Deprecated
         double ConversionProbability(double ma, double Ea, double pressure, double density, double angle = 0.0);

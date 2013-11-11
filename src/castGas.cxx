@@ -60,7 +60,7 @@ cout << "Atomic Weight: " << atomicwg << endl;
 
 double castGas::getDensity(double temp, double press) // {{{
 {
-
+    // Taken from Enrico Da Riva's code used in Fluent CFD  simulations
     double a1,a2,a3;   /* v^3 + a1 v^2 + a2 v^3 + a3 = 0*/
     double vv,vv1,vv2,vv3;
     double qq,qq3,sqq,rr,rrabs,tt,dd;
