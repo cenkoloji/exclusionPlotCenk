@@ -28,12 +28,17 @@ class castConfig
 	castConfig(string fname);
 	~castConfig();
 
+        // castProfile options {{{
+
         //castProfile options
 	bool pCenter;
 
         // Use Density Profile to calculate Conversion Probability
         bool useProfile;
 
+        // Increment to integrate density profile
+        double increment;
+        //}}}
 
 };
 #endif

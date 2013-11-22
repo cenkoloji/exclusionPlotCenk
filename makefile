@@ -18,12 +18,12 @@ INC_DIRS = -I$(CAST_PATH)/inc
 
 # set of objets used in compilation
 OBJS =  $(CAST_OBJ)/castConversion.o $(CAST_OBJ)/castDetector.o $(CAST_OBJ)/castExposure.o $(CAST_OBJ)/castGas.o $(CAST_OBJ)/castLike.o $(CAST_OBJ)/castMagnet.o $(CAST_OBJ)/castTracking.o $(CAST_OBJ)/castProfile.o $(CAST_OBJ)/castConfig.o
-BINARIES =  $(CAST_BIN)/testLike $(CAST_BIN)/singleDetector $(CAST_BIN)/density2mass  $(CAST_BIN)/conversionStudy
+BINARIES =  $(CAST_BIN)/testSim $(CAST_BIN)/singleDetector $(CAST_BIN)/density2mass  $(CAST_BIN)/conversionStudy
 
 #defining compiling targets
 all: Wellcome castConfig castTracking castExposure castMagnet castDetector castGas castConversion castGas castLike castProfile libCAST programs
-#programs: testLike singleDetector density2mass conversionStudy
-programs: conversionStudy
+#programs: singleDetector density2mass conversionStudy
+programs: conversionStudy testSim
 
 castConversion: $(CAST_OBJ)/castConversion.o
 castDetector: $(CAST_OBJ)/castDetector.o
@@ -35,7 +35,7 @@ castMagnet  : $(CAST_OBJ)/castMagnet.o
 castProfile : $(CAST_OBJ)/castProfile.o
 castTracking: $(CAST_OBJ)/castTracking.o
 libCAST: $(CAST_LIB)/libCAST.so
-testLike: $(CAST_BIN)/testLike
+testSim: $(CAST_BIN)/testSim
 stepSize: $(CAST_BIN)/stepSize
 conversionStudy: $(CAST_BIN)/conversionStudy
 singleDetector: $(CAST_BIN)/singleDetector
@@ -95,9 +95,9 @@ $(CAST_LIB)/libCAST.so: $(CAST_SRC)/castConversion.cxx $(CAST_INC)/castConversio
 	@echo -e "\033[40m\033[0;36m  creating libCAST.so shared object........\033[0m"
 	@g++ -shared $(CPPFLAGS) $(INC_DIRS) -o $(CAST_LIB)/libCAST.so $(OBJS)
 
-$(CAST_BIN)/testLike: $(CAST_SRC)/castConversion.cxx $(CAST_INC)/castConversion.h $(CAST_SRC)/castDetector.cxx $(CAST_INC)/castDetector.h $(CAST_SRC)/castGas.cxx $(CAST_INC)/castGas.h $(CAST_SRC)/castExposure.cxx $(CAST_INC)/castExposure.h $(CAST_SRC)/castMagnet.cxx $(CAST_INC)/castMagnet.h $(CAST_SRC)/castTracking.cxx $(CAST_INC)/castTracking.h $(CAST_SRC)/castLike.cxx $(CAST_INC)/castLike.h $(CAST_LIB)/libCAST.so $(CAST_SRC)/testLike.cxx $(CAST_SRC)/castConfig.cxx $(CAST_INC)/castConfig.h  makefile
-	@echo -e "\033[40m\033[0;32m  compiling testLike program........\033[0m"
-	@g++ $(CPPFLAGS)  $(INC_DIRS) -o $(CAST_BIN)/testLike $(CAST_SRC)/testLike.cxx $(CAST_LIB)/libCAST.so
+$(CAST_BIN)/testSim: $(CAST_SRC)/castConversion.cxx $(CAST_INC)/castConversion.h $(CAST_SRC)/castDetector.cxx $(CAST_INC)/castDetector.h $(CAST_SRC)/castGas.cxx $(CAST_INC)/castGas.h $(CAST_SRC)/castExposure.cxx $(CAST_INC)/castExposure.h $(CAST_SRC)/castMagnet.cxx $(CAST_INC)/castMagnet.h $(CAST_SRC)/castTracking.cxx $(CAST_INC)/castTracking.h $(CAST_SRC)/castLike.cxx $(CAST_INC)/castLike.h $(CAST_LIB)/libCAST.so $(CAST_SRC)/testSim.cxx $(CAST_SRC)/castConfig.cxx $(CAST_INC)/castConfig.h  makefile
+	@echo -e "\033[40m\033[0;32m  compiling testSim program........\033[0m"
+	@g++ $(CPPFLAGS)  $(INC_DIRS) -o $(CAST_BIN)/testSim $(CAST_SRC)/testSim.cxx $(CAST_LIB)/libCAST.so
 
 $(CAST_BIN)/singleDetector: $(CAST_SRC)/castConversion.cxx $(CAST_INC)/castConversion.h $(CAST_SRC)/castDetector.cxx $(CAST_INC)/castDetector.h $(CAST_SRC)/castGas.cxx $(CAST_INC)/castGas.h $(CAST_SRC)/castExposure.cxx $(CAST_INC)/castExposure.h $(CAST_SRC)/castMagnet.cxx $(CAST_INC)/castMagnet.h $(CAST_SRC)/castTracking.cxx $(CAST_INC)/castTracking.h $(CAST_SRC)/castLike.cxx $(CAST_INC)/castLike.h $(CAST_LIB)/libCAST.so $(CAST_SRC)/singleDetector.cxx $(CAST_SRC)/castConfig.cxx $(CAST_INC)/castConfig.h  makefile
 	@echo -e "\033[40m\033[0;32m  compiling singleDetector program........\033[0m"

@@ -1,3 +1,6 @@
+22-11-2013 Cenk Yildiz <cenk.yildiz@cern.ch>
+	* Added simulation code, creates exposure and tracking counts file
+
 11-11-2013 Cenk Yildiz <cenk.yildiz@cern.ch>
 	* many changes, castConfig and castProfile classes added
 	* Next change is totally removing the ConversionProbabilityFromLength

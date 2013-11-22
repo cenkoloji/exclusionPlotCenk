@@ -11,9 +11,12 @@ castProfile::castProfile(castGas * cG, double press, double Tmag, double angle, 
     pCenter = cfg->pCenter; // If true, the pressure is central pressure instead of P_CB(at -5m)
     lenstart = -4.; //Should be get by a function in castGas
     lenend = 4.; //Should be get by a function in castGas
-    increment = 0.01; // Can be angle+pressure dependent
+    increment = cfg->increment; // Can be angle+pressure dependent
 
-    elements = int ((lenend - lenstart) / increment);
+    if (increment == 0.0)
+        elements = 1;
+    else
+        elements = int ((lenend - lenstart) / increment);
     density = new double[elements];
     pressure = new double[elements];
     gas = cG;
@@ -25,31 +28,39 @@ castProfile::castProfile(castGas * cG, double press, double Tmag, double angle, 
     {
         pressure[0] = press + gas->getHydrostatic(press,Tmag,0,lenstart,angle);
         //cout << press <<  " " <<  gas->getHydrostatic(press,Tmag,0,lenstart,angle) << endl;
+        centerpressure = press;
+        centerdensity = gas->getDensity(Tmag,press);
     }
     else
     {
         pressure[0] = press + gas->getHydrostatic(press,Tmag,lenstart,angle);
         //cout << press <<  " " <<  gas->getHydrostatic(press,Tmag,lenstart,angle) << endl;
+        centerpressure = press + gas->getHydrostatic(press,Tmag,0,angle);
+        centerdensity = gas->getDensity(Tmag,centerpressure);
     }
 
     density[0] = gas->getDensity(Tmag,pressure[0]);
     double phydro;
-
-    // Calculating the pressure and density over the length
-    for (int i = 1; i < elements; i++)
+    
+    if (cfg->useProfile)
     {
-        phydro = density[i-1] * height * GRAVITY;
-        pressure[i] = pressure[i-1]  + phydro;
-        density[i] = gas->getDensity(Tmag,pressure[i]);
+        // Calculating the pressure and density over the length
+        for (int i = 1; i < elements; i++)
+        {
+            phydro = density[i-1] * height * GRAVITY;
+            pressure[i] = pressure[i-1]  + phydro;
+            density[i] = gas->getDensity(Tmag,pressure[i]);
 
-        // Getting the center pressure
-        if ((i-1)*increment + lenstart <0. && (i)*increment + lenstart >=0.)
-        {   
-            centerdensity = density[i];
-            centerpressure = pressure[i];
-            //cout << " Center vs Input Press at point " << i << ":  " << centerpressure << " " << press << endl;
+            // Getting the center pressure
+            if ((i-1)*increment + lenstart <0. && (i)*increment + lenstart >=0.)
+            {   
+                //cout << "mass1, mass2: " << gas->getPhotonMass(centerdensity*1E-3) << ", " << gas->getPhotonMass(density[i]*1E-3) << endl;
+                centerdensity = density[i];
+                centerpressure = pressure[i];
+                //cout << " Center vs Input Press at point " << i << ":  " << centerpressure << " " << press << endl;
+            }
+            //if (i%100==1) { cout << "L=" <<lenstart + i*increment << ", P=" << pressure[i] << " d=" << density[i] <<" mgamma=" << gas->getPhotonMass(density[i]*1E-3) << " phydro=" << phydro << endl; }
         }
-        //if (i%100==1) { cout << "L=" <<lenstart + i*increment << ", P=" << pressure[i] << " d=" << density[i] <<" mgamma=" << gas->getPhotonMass(density[i]*1E-3) << " phydro=" << phydro << endl; }
     }
 
 } //}}}

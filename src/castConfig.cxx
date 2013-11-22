@@ -18,7 +18,7 @@ castConfig::castConfig(string fname)
     string castPath;
     castPath = getenv("CAST_PATH");
     string file2read = castPath +"/inputs/"+ fname;
-    cout << "Config File: " << file2read << endl;
+    //cout << "Config File: " << file2read << endl;
 
     ifstream cfgFile;                   // create object for config file
     cfgFile.open(file2read.c_str());    // Opening the file
@@ -50,15 +50,22 @@ castConfig::castConfig(string fname)
 
         key = line.substr (0,found);
         value = line.substr (found);
-        cout << "Key: " << key << endl;
-        cout << "Value: " << value << endl;
+        //cout << "Key: " << key << endl;
+        //cout << "Value: " << value << endl;
 
-        // Checking each parameter
+        // castProfile options {{{
         if (key=="PCENTER")
             pCenter = bool(atoi(value.c_str()));
 
+        if (key=="INCREMENT")
+            increment = double(atof(value.c_str()));
+
         if (key=="USEPROFILE")
             useProfile = bool(atoi(value.c_str()));
+        if (!useProfile)
+            increment = 0.0;
+
+        //}}}
 
     }
 

@@ -32,6 +32,7 @@ castLike::castLike(castConversion *cconv, castMagnet *cmag, castGas *cgas, castD
     //sprintf(outputPath,"%s/outputs/",getenv("CAST_PATH"));
     nGamma = 0;
 
+
     printf("Number of detectors %d\n",ndetectors);
 }// }}}
 
@@ -848,7 +849,6 @@ double castLike::GetMaxLike(double ma, const vector<castExposure> vecExp[],const
     cout << "max: " << maxGl4  << "\t, left:"<< sigmaLeft << "\t, right:"<< sigmaRight << "\t, der:" << sigder<< endl;
 
 }// }}}
-
 
 double castLike::CalculateLikelihood(double ma, double g4, double nGamma, const vector<castExposure> vecExp[],const vector<castTracking> vecTrk[] ) //{{{
 {

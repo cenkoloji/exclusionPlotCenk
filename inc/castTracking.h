@@ -31,6 +31,9 @@ class castTracking
                 double angle;
                 double tmag;
 		double pressure; //pressure in the center of the cold bore, or at PCB (depending on how the file is prepared)
+
+                double bckCnts; // Expected background counts, calculated in castLike
+                double expCnts; // Expected total counts, calculated in castLike
 		int gasType;
 
 };
