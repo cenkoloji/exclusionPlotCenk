@@ -130,6 +130,8 @@ int main( int argc, char *argv[])
             trkFile >> trk.timestamp >> trk.energy >> trk.density >> trk.bckLevel >> trk.angle >> trk.tmag >> trk.pressure;
 
             trk.density = trk.density * 1E-3;
+            trk.bckCnts = 0.0; // Will be filled in castLike
+            trk.expCnts = 0.0; // Will be filled in castLike
 
             cout <<" Dens: " <<  trk.density <<", En: " << trk.energy <<  ", bck: " << trk.bckLevel << endl;
             vecTracking[i].push_back(trk);
@@ -162,30 +164,37 @@ int main( int argc, char *argv[])
 
     like->Show();
 
+    
+    like->FillTrackingVectors(ma,vecTracking);
+    //cout << "pres: " << vecTracking[0][2].pressure  << " - en: " << vecTracking[0][2].energy << " - bck: " << vecTracking[0][2].bckLevel << " - expCnts: " <<  vecTracking[0][1].expCnts << " - expCnts: " <<  vecTracking[0][1].bckCnts << endl ;
 
     double gL4 = 0.0;
 
     gL4=like->GetgL4(ma, vecExposure, vecTracking);
 
-    like->GetMaxLike(ma, vecExposure, vecTracking, gL4, 1);
-
-    double gRange[]={like->maxg4 - like->sigmaLeft, gL4*1.2}; //Ranges to plot gl4
-    //double gRange[]={-100,10 }; //Ranges to plot gl4 // TODO remove
-    like->plot_gL4(ma, vecExposure,vecTracking,gRange);
 
     cout << "   ma:" << ma << endl;
     cout << "   nGamma:" << like->nGamma << endl;
     cout << "   gL^4:" << gL4 << "*10^(-40)" << endl;
     cout << "=> gL:" << std::sqrt(std::sqrt(gL4)) << "*10^(-10)" << endl;
 
+    /*
+    like->GetMaxLike(ma, vecExposure, vecTracking, gL4, 1);
+    double gRange[]={like->maxg4 - like->sigmaLeft, gL4*1.2}; //Ranges to plot gl4
+    //double gRange[]={-100,10 }; //Ranges to plot gl4 // TODO remove
+    like->plot_gL4(ma, vecExposure,vecTracking,gRange);
+
+    */
+
     char outFileName[256];      // File name of output
     ofstream outFile;           // file object to write
     sprintf(outFileName,"%s/ma/%lf.txt",like->outputPath,ma);
     outFile.open(outFileName);
 
-    outFile << ma << "\t" << like->nGamma << "\t" << gL4 << "\t" <<  endl;
 
+    outFile << ma << "\t" << like->nGamma << "\t" << gL4 << "\t" <<  endl;
     outFile.close();
+
     /**/
 
     return 0;

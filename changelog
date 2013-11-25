@@ -1,3 +1,12 @@
+25-11-2013 Cenk Yildiz <cenk.yildiz@cern.ch>
+	* calculating castTracking members only once
+	* Only implemented in getGL4.
+	* Next step to implement everywhere(plotGL4, GetMax)
+
+22-11-2013 Cenk Yildiz <cenk.yildiz@cern.ch>
+	* Wrote method in castLike to calculate members of castTracking, so
+	that they will be calculated only once.
+
 22-11-2013 Cenk Yildiz <cenk.yildiz@cern.ch>
 	* Added simulation code, creates exposure and tracking counts file
 

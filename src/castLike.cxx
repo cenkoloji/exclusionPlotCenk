@@ -32,15 +32,55 @@ castLike::castLike(castConversion *cconv, castMagnet *cmag, castGas *cgas, castD
     //sprintf(outputPath,"%s/outputs/",getenv("CAST_PATH"));
     nGamma = 0;
 
-
     printf("Number of detectors %d\n",ndetectors);
 }// }}}
 
 castLike::~castLike(){}
 
+void castLike::FillTrackingVectors(double ma,vector<castTracking> vecTrk[]) // {{{ Fills missing elements of tracking vectors
+{
+
+    cout << "Filling Tracking Vector!" <<endl ;
+    // Calculating stuff:
+    double bckCnts, expCnts,E0,Ef,E;
+    for(int d = 0; d<ndetectors ; d++)
+    {
+        int nCounts=vecTrk[d].size();
+        //printf("nCounts %d",nCounts);
+
+        // Summing the contribution of each count
+        for(int i =0; i<nCounts;i++)
+        {
+
+            if(gasTypes)
+                gas->setType(vecTrk[d][i].gasType);
+
+            // Finding the relevant energy  bin to calculate expected number of photons
+            for(E=det[d]->getEinitial();E<det[d]->getEfinal();E+=0.5)
+            {
+                if((vecTrk[d][i].energy)>E && (vecTrk[d][i].energy)<E+0.5)
+                {
+                    E0=E;
+                    Ef= E+0.5;
+                }
+            }
+
+            bckCnts = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
+            expCnts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].tmag,vecTrk[d][i].angle, 1.0 );
+            vecTrk[d][i].bckCnts = bckCnts;
+            vecTrk[d][i].expCnts = expCnts;
+            //cout << bckCnts << " " << expCnts << endl;
+        }
+    }
+
+    cout << "Filled Tracking Vectors!" <<endl ;
+}// }}}
+
 double castLike::GetNgammaCounts(double ma, const vector<castExposure> vecExp[])// return the total expected number of counts for a axion mass (eV), uses as input the exposure in a tree {{{
 {
-    nGamma = 0;
+    if (nGamma != 0)
+        return nGamma;
+
 
     double E0,Ef; //,mgammaCount;
     int nbins;
@@ -75,7 +115,7 @@ double castLike::GetNgammaCounts(double ma, const vector<castExposure> vecExp[])
                           //* conv->ExpectedNumberOfCounts(E0,Ef,ma,vecExp[d][i].pressure,vecExp[d][i].density,vecExp[d][i].timeExp);
                 //if(i==)cout<<E0<<"  "<<Ef<<"   "<<nGamma<<endl;
             }
-        cout << i << " " << nGamma << endl;
+        //cout << i << " " << nGamma << endl;
         }
 
     }
@@ -158,6 +198,7 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
                 // Summing the contribution of each count
                 for(int i =0; i<nCounts;i++)
                 {
+                    /*
                     if(gasTypes)
                         gas->setType(vecTrk[d][i].gasType);
 
@@ -173,9 +214,10 @@ double castLike::GetgL4(double ma, const vector<castExposure> vecExp[],const vec
                             Ef= E+0.5;
                         }
                     }
+                    */
 
-                    double bcklevel = vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
-                    double expCounts = det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].tmag,vecTrk[d][i].angle, 1.0 );
+                    double bcklevel = vecTrk[d][i].bckCnts;//vecTrk[d][i].bckLevel * det[d]->getFocusArea() * (Ef-E0);
+                    double expCounts = vecTrk[d][i].expCnts;//det[d]->getDetEfficiency(vecTrk[d][i].energy) * det[d]->getOpticsEfficiency() * mag->getAreaCB() * conv->ExpectedNumberOfCounts( E0, Ef, ma, vecTrk[d][i].pressure,vecTrk[d][i].tmag,vecTrk[d][i].angle, 1.0 );
                     term2+=  std::log ( bcklevel + g4 * expCounts );
 
                     //cout << "Event: " << i << "\ten: " << vecTrk[d][i].energy  << "\tbck Level :" << bcklevel <<  "\texpCounts: "  << expCounts << "\tg*expCounts: " << g4*expCounts <<  endl ;

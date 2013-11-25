@@ -54,6 +54,9 @@ class castLike// : public TObject
                 double sigmaLeft;   //Left Sigma. Calculated by GetMaxLike
                 double sigmaRight;   //Left Sigma. Calculated by GetMaxLike
 
+                // Fills missing vars of Tracking vector
+                void FillTrackingVectors(double ma,vector<castTracking> vecTrk[]);
+
 		//readGasTypes for combined analysis 2008+2010 gaps can change inside the likelihood the type of gas
                 // For 2008, keep as 0
 		void readGasTypes(bool ty){gasTypes=ty;};
