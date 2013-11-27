@@ -20,7 +20,7 @@ int main( int argc, char *argv[])
 {
 
     double ma=0.38;
-
+    string cfgFileName;
 
     // Command Line Arguments {{{
     if(argc>=2)
@@ -35,6 +35,7 @@ int main( int argc, char *argv[])
                     switch ( *argv[i] )
                     {
                         case 'a' : ma=atof(argv[i+1]); break;
+                        case 'c' : cfgFileName=(argv[i+1]); break;
                         default : return 0;
                     }
                 }
@@ -42,7 +43,9 @@ int main( int argc, char *argv[])
         }
     }// }}}
 
+
     cout << "\nStarting Limit Calculation for Simulated data with ma= " << ma <<endl ;
+    cout << "cfg: " << cfgFileName <<endl ;
 
     //Setting Paths {{{
     char inputPath[256];
@@ -133,7 +136,7 @@ int main( int argc, char *argv[])
             trk.bckCnts = 0.0; // Will be filled in castLike
             trk.expCnts = 0.0; // Will be filled in castLike
 
-            cout <<" Dens: " <<  trk.density <<", En: " << trk.energy <<  ", bck: " << trk.bckLevel << endl;
+            //cout <<" Dens: " <<  trk.density <<", En: " << trk.energy <<  ", bck: " << trk.bckLevel << endl;
             vecTracking[i].push_back(trk);
         }
 
@@ -151,7 +154,7 @@ int main( int argc, char *argv[])
     castGas *gas = new castGas(3.0160293,mag,1);
 
     //castConfig instance
-    castConfig * cfg1 = new castConfig("config3.cfg");
+    castConfig * cfg1 = new castConfig(cfgFileName);
 
     //castConversion instance
     castConversion *conv = new castConversion(mag,gas,cfg1);
@@ -159,12 +162,13 @@ int main( int argc, char *argv[])
     // castLike instance
     castLike *like = new castLike(conv,mag,gas,det,ndetectors);
 
-    sprintf(like->outputPath,"%s/simoutputs/",getenv("CAST_PATH"));
+    sprintf(like->outputPath,"%s/%s/",getenv("CAST_PATH"),(cfg1->outpath).c_str());
     cout << "Output Path: " << like->outputPath  <<endl ;
+    cout << "Output Path:" << cfg1->outpath  <<endl ;
+
 
     like->Show();
 
-    
     like->FillTrackingVectors(ma,vecTracking);
     //cout << "pres: " << vecTracking[0][2].pressure  << " - en: " << vecTracking[0][2].energy << " - bck: " << vecTracking[0][2].bckLevel << " - expCnts: " <<  vecTracking[0][1].expCnts << " - expCnts: " <<  vecTracking[0][1].bckCnts << endl ;
 
@@ -173,28 +177,26 @@ int main( int argc, char *argv[])
     gL4=like->GetgL4(ma, vecExposure, vecTracking);
 
 
-    cout << "   ma:" << ma << endl;
-    cout << "   nGamma:" << like->nGamma << endl;
-    cout << "   gL^4:" << gL4 << "*10^(-40)" << endl;
-    cout << "=> gL:" << std::sqrt(std::sqrt(gL4)) << "*10^(-10)" << endl;
 
-    /*
     like->GetMaxLike(ma, vecExposure, vecTracking, gL4, 1);
     double gRange[]={like->maxg4 - like->sigmaLeft, gL4*1.2}; //Ranges to plot gl4
     //double gRange[]={-100,10 }; //Ranges to plot gl4 // TODO remove
     like->plot_gL4(ma, vecExposure,vecTracking,gRange);
 
-    */
-
     char outFileName[256];      // File name of output
     ofstream outFile;           // file object to write
     sprintf(outFileName,"%s/ma/%lf.txt",like->outputPath,ma);
     outFile.open(outFileName);
+    cout << outFileName << endl;
 
+
+    cout << "   ma:" << ma << endl;
+    cout << "   nGamma:" << like->nGamma << endl;
+    cout << "   gL^4:" << gL4 << "*10^(-40)" << endl;
+    cout << "=> gL:" << std::sqrt(std::sqrt(gL4)) << "*10^(-10)" << endl;
 
     outFile << ma << "\t" << like->nGamma << "\t" << gL4 << "\t" <<  endl;
     outFile.close();
-
     /**/
 
     return 0;

@@ -6,7 +6,8 @@ import matplotlib.pyplot as pl
 
 import os
 
-base_dir = "outputs/"
+base_dir = "simoutputs0.01/"
+base_dir = "simoutputsFixed/"
 plots_dir = os.path.join(base_dir,"plots")
 sigma_dir = os.path.join(base_dir,"sigmas")
 ma_dir = os.path.join(base_dir,"ma")
@@ -17,7 +18,7 @@ files.sort()
 
 i = 0
 
-files = ["0.451000"]
+files = ["0.885000"]
 
 for f in files:
     i += 1

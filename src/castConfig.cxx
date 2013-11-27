@@ -49,9 +49,14 @@ castConfig::castConfig(string fname)
             continue;
 
         key = line.substr (0,found);
-        value = line.substr (found);
+        value = line.substr (found+1);
         //cout << "Key: " << key << endl;
         //cout << "Value: " << value << endl;
+
+        // General Options{{{
+        if (key=="OUT_PATH")
+            outpath = value;
+        //}}}
 
         // castProfile options {{{
         if (key=="PCENTER")

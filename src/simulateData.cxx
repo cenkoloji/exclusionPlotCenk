@@ -19,6 +19,31 @@ using namespace std;
 int main(int argc,const char *argv[])
 {
 
+    double mai; // Initial mass
+    double maf; // Final mass
+    string cfgFileName;
+
+    // Command Line Arguments {{{
+    if(argc>=2)
+    {
+        for(int i = 1; i < argc; i++)
+        {
+            if( *argv[i] == '-')
+            {
+                argv[i]++;
+                if( *argv[i] == '-') argv[i]++;
+                {
+                    switch ( *argv[i] )
+                    {
+                        case 'i' : mai=atof(argv[i+1]); break;
+                        case 'f' : maf=atof(argv[i+1]); break;
+                        default : return 0;
+                    }
+                }
+            }
+        }
+    }// }}}
+
     cout << "\nCreating magnet instance..." <<endl ;
     castMagnet *mag = new castMagnet();
     castGas *gas = new castGas(3.0160293,mag,1);
@@ -48,8 +73,8 @@ int main(int argc,const char *argv[])
 
     double pressure,density;
 
-    double pressure1 = 65.0;//mbar
-    double pressure2 = 67.0;//mbar
+    double pressure1 = 98.0;//mbar
+    double pressure2 = 100.0;//mbar
         cout <<  gas->getPhotonMass(gas->getDensity(Tmag,pressure1*100)*1E-3) << endl;
         cout <<  gas->getPhotonMass(gas->getDensity(Tmag,pressure2*100)*1E-3) << endl;
     double pressure_step = 0.1; //mbar
@@ -71,7 +96,7 @@ int main(int argc,const char *argv[])
         density = gas->getDensity(Tmag,pressure*100);
 
 
-        for (int j = 0; j < Nangles; j++) 
+        for (int j = 0; j < Nangles; j++)
         {
             angle = angle1 + j * angle_step;
             count = i*Nangles + j;

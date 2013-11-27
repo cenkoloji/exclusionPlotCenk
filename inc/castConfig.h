@@ -28,6 +28,9 @@ class castConfig
 	castConfig(string fname);
 	~castConfig();
 
+    // Path options
+    string outpath;
+
         // castProfile options {{{
 
         //castProfile options

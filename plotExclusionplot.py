@@ -7,12 +7,18 @@ import matplotlib as mpl
 import matplotlib.pyplot as pl
 
 plot_sigma = 1
-plot_limit = 0
+plot_limit = 1
+lims = [(0.8,1.2)]
 
-colors = {1:"red",2:"green",3:"blue","all":"black"}
-ls = {1:"dotted",2:"-",3:"dashdot","all":"-"}
-labels = {1:"B3",2:"M6",3:"M9","all":"combined"}
-output_dirs = {1:"outputs1",2:"outputs2",3:"outputs3","all":"outputs"}
+#colors = {1:"red",2:"green",3:"blue","all":"black"}
+#ls = {1:"dotted",2:"-",3:"dashdot","all":"-"}
+#labels = {1:"B3",2:"M6",3:"M9","all":"combined"}
+#output_dirs = {1:"outputs1",2:"outputs2",3:"outputs3","all":"outputs"}
+output_dirs = {"all":"simoutputsFixed","0.01":"simoutputs0.01"}#,2:"outputs2",3:"outputs3","all":"outputs"}
+colors = {"0.01":"red","all":"green"}
+ls = {"0.01":"--","all":"-"}
+lw = {"0.01":2,"all":1}
+labels = {"0.01":"0.01m","all":"Fixed"}
 
 def plotSigma(det):#{{{
 
@@ -54,7 +60,8 @@ def plotSigma(det):#{{{
     nsigma_sign_array = np.array(nsigma_sign_array)
 
     mass_array = np.array(mass_array)
-    lims = [(0.385,0.456),(0.464,0.5),(0.512,0.563),(0.572,0.615),(0.625,0.652)]
+    #lims = [(0.385,0.456),(0.464,0.5),(0.512,0.563),(0.572,0.615),(0.625,0.652)]
+    #lims = [(0.80,1.95)]
 
     mask = (mass_array==-1)
     for lim in lims:
@@ -69,7 +76,7 @@ def plotSigma(det):#{{{
     for n in [1,2,3,4]:
         g = np.count_nonzero(nsigma_sign_array>n)
         print g
-        print ("More than {} sigma: {:.4f}".format(n, g* 100./N ))
+        #print ("More than {} sigma: {:.4f}".format(n, g* 100./N ))
 
 
     pl.plot(mass_array,nsigma_sign_array,"o",color=colors[det],label=labels[det])
@@ -102,14 +109,15 @@ def plotLimit(det,ngammafig=1,limitfig=2):# {{{
         limit_array.append(limit)
 
     pl.figure(ngammafig)
-    pl.plot(mass_array,ngamma_array,color=colors[det],linestyle=ls[det],label=labels[det])
+    pl.plot(mass_array,ngamma_array,color=colors[det],linestyle=ls[det],linewidth = lw[det],label=labels[det])
 
     mass_array = np.array(mass_array)
     limit_array = np.array(limit_array)
     #Limits to calculate mean
-    lims= [(0.385,0.652)]
-    lims = [(0.385,0.456),(0.464,0.5),(0.512,0.563),(0.572,0.615),(0.625,0.652)]
-    
+    #lims= [(0.385,0.652)]
+    #lims = [(0.385,0.456),(0.464,0.5),(0.512,0.563),(0.572,0.615),(0.625,0.652)]
+    #lims = [(0.8,1.95)]
+
     mask = (mass_array==-1)
     for lim in lims:
         mask = mask + (mass_array>lim[0]) * (mass_array<lim[1]) 
@@ -119,7 +127,9 @@ def plotLimit(det,ngammafig=1,limitfig=2):# {{{
     print("Mean=",limit_array.mean())
 
     pl.figure(limitfig)
-    pl.plot(mass_array,limit_array,color=colors[det],linestyle=ls[det],label=labels[det])
+    pl.plot(mass_array,limit_array,color=colors[det],linestyle=ls[det],linewidth = lw[det],label=labels[det])
+    print mass_array
+    print limit_array
 
 #}}}
 
@@ -137,14 +147,15 @@ if plot_sigma:#{{{
     #pl.title("Null Hypothesis Testing")
     pl.legend()
     ax = pl.gca()
-    ax.set_xlim(0.35,0.70)
+    #ax.set_xlim(0.85,0.95)
+    ax.set_xlim(lims[0])
     ax.set_xlabel("Axion mass(eV)")
     ax.set_ylabel("Number of sigmas")
-    for det in ["all"]:
+    for det in ["all","0.01"]:
         plotSigma(det)
     pl.legend()
-    pl.savefig("exc_nsigma.pdf",bbox_inches="tight")
-    #pl.show()
+    #pl.savefig("exc_nsigma.pdf",bbox_inches="tight")
+    pl.show()
 #}}}
 
 if plot_limit:#{{{
@@ -152,7 +163,8 @@ if plot_limit:#{{{
 
     #pl.title("Number of Expected Photons")
     ax = pl.gca()
-    ax.set_xlim(0.35,0.70)
+    #ax.set_xlim(0.85,0.95)
+    ax.set_xlim(lims[0])
     ax.set_xlabel("Axion mass(eV)")
     ax.set_ylabel("Number of expected photons")
 
@@ -160,21 +172,23 @@ if plot_limit:#{{{
 
     #pl.title("Exclusion Plot")
     ax = pl.gca()
-    ax.set_xlim(0.35,0.70)
+    #ax.set_xlim(0.85,0.95)
+    ax.set_xlim(lims[0])
+    ax.set_ylim(1E-11,1E-8)
     ax.set_xlabel("Axion mass(eV)")
     ax.set_ylabel("$g_{a\gamma}($GeV$^{-1})$")
 
-    for det in ["all"]:
+    for det in ["all","0.01"]:
         plotLimit(det)
 
     pl.figure(1)
     pl.legend()
-    pl.savefig("exc_ngamma.pdf",bbox_inches="tight")
+    #pl.savefig("exc_ngamma.pdf",bbox_inches="tight")
 
     pl.figure(2)
 
     #Plotting models:{{{
-    
+    '''
     def g_a(m_a,R):
         """g_a in terms of mass and R=E/N"""
         return m_a*1.936E-10*np.abs(R-1.93)
@@ -199,11 +213,12 @@ if plot_limit:#{{{
     g_array = g_a(m_array,R)
     pl.plot(m_array,g_array,"-",lw=2,alpha=0.5,label="E/N=6")
     #}}}
+    '''
 
     pl.yscale("log")
     pl.legend()
-    pl.savefig("exc_exclusionplot_models.pdf",bbox_inches="tight")
+    #pl.savefig("exc_exclusionplot_models.pdf",bbox_inches="tight")
+    pl.show()
 
-    #pl.show()
 #}}}
 
