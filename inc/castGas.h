@@ -52,6 +52,7 @@ class castGas
 
 		//gets
 		double getPhotonMass(double density);//return the effective photon mass in eV from density in g/cm3
+		double getDensityFromPhotonMass(double ma);//return the density in g/cm3 from effective photon mass in eV
 		double getMagnetLength(double pressure, double angle=0.0);//return the magnet lengt for a given pressure inside de Coldbore,p:mbar
 
                 // Function to print information

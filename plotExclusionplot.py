@@ -8,7 +8,7 @@ import matplotlib.pyplot as pl
 
 plot_sigma = 1
 plot_limit = 1
-lims = [(0.8,1.2)]
+lims = [(0.1,1.2)]
 
 #colors = {1:"red",2:"green",3:"blue","all":"black"}
 #ls = {1:"dotted",2:"-",3:"dashdot","all":"-"}
@@ -76,7 +76,7 @@ def plotSigma(det):#{{{
     for n in [1,2,3,4]:
         g = np.count_nonzero(nsigma_sign_array>n)
         print g
-        #print ("More than {} sigma: {:.4f}".format(n, g* 100./N ))
+        print ("More than {} sigma: {:.4f}".format(n, g* 100./N ))
 
 
     pl.plot(mass_array,nsigma_sign_array,"o",color=colors[det],label=labels[det])
@@ -102,6 +102,8 @@ def plotLimit(det,ngammafig=1,limitfig=2):# {{{
 
         ma, ngamma, limit = np.loadtxt(full_fname,dtype=np.float)
 
+        #if det == "0.01" :print full_fname, ma,ngamma,limit
+
         limit = np.sqrt(np.sqrt(limit))*1E-10
 
         ngamma_array.append(ngamma)
@@ -121,15 +123,16 @@ def plotLimit(det,ngammafig=1,limitfig=2):# {{{
     mask = (mass_array==-1)
     for lim in lims:
         mask = mask + (mass_array>lim[0]) * (mass_array<lim[1]) 
-    print mask
+    #print mask
     mass_array=mass_array[mask]
     limit_array=limit_array[mask]
     print("Mean=",limit_array.mean())
 
     pl.figure(limitfig)
     pl.plot(mass_array,limit_array,color=colors[det],linestyle=ls[det],linewidth = lw[det],label=labels[det])
-    print mass_array
-    print limit_array
+    #print mass_array
+    #print limit_array
+    return mass_array, limit_array
 
 #}}}
 
@@ -174,13 +177,19 @@ if plot_limit:#{{{
     ax = pl.gca()
     #ax.set_xlim(0.85,0.95)
     ax.set_xlim(lims[0])
-    ax.set_ylim(1E-11,1E-8)
+    #ax.set_ylim(1E-11,1E-8)
     ax.set_xlabel("Axion mass(eV)")
     ax.set_ylabel("$g_{a\gamma}($GeV$^{-1})$")
 
+    mass_g = {}
     for det in ["all","0.01"]:
-        plotLimit(det)
+        mass_g[det] = plotLimit(det)
 
+    pl.legend(loc=0)
+    percent_diff = (mass_g["all"][1] - mass_g["0.01"][1])/mass_g["0.01"][1] * 100
+    ax2 = ax.twinx()
+    pl.plot(mass_g["all"][0],percent_diff,label="percent diff",alpha= 0.5)
+    ax2.set_ylabel("Percent difference of two methods(Fixed vs. 0.01m)")
     pl.figure(1)
     pl.legend()
     #pl.savefig("exc_ngamma.pdf",bbox_inches="tight")
@@ -215,7 +224,7 @@ if plot_limit:#{{{
     #}}}
     '''
 
-    pl.yscale("log")
+    #pl.yscale("log")
     pl.legend()
     #pl.savefig("exc_exclusionplot_models.pdf",bbox_inches="tight")
     pl.show()

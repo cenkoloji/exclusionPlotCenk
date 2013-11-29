@@ -1,3 +1,7 @@
+29-11-2013 Cenk Yildiz <cenk.yildiz@cern.ch>
+	* Implemented using castTracking members in all castLike methods
+	* Simulation is run for ranges of masses with success.
+
 25-11-2013 Cenk Yildiz <cenk.yildiz@cern.ch>
 	* calculating castTracking members only once
 	* Only implemented in getGL4.

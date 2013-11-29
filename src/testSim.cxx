@@ -21,6 +21,7 @@ int main( int argc, char *argv[])
 
     double ma=0.38;
     string cfgFileName;
+    string inFileName;
 
     // Command Line Arguments {{{
     if(argc>=2)
@@ -36,6 +37,7 @@ int main( int argc, char *argv[])
                     {
                         case 'a' : ma=atof(argv[i+1]); break;
                         case 'c' : cfgFileName=(argv[i+1]); break;
+                        case 'i' : inFileName=(argv[i+1]); break;
                         default : return 0;
                     }
                 }
@@ -97,7 +99,7 @@ int main( int argc, char *argv[])
     for(int i=0;i<ndetectors; i++)
     {
         
-        sprintf(expFileName,"%s/simexp%c.txt",inputPath,namePrefix[i]);
+        sprintf(expFileName,"%s/%sexp%c.txt",inputPath,inFileName.c_str(),namePrefix[i]);
         expFile.open(expFileName);  // associate with a file
         cout << expFileName << endl;
 
@@ -114,13 +116,13 @@ int main( int argc, char *argv[])
 
 
             //if (exp.timeExp!= 0)
-                //cout << "dens: " << exp.density << ", expTime: " << exp.timeExp << endl;
+                cout << "dens: " << exp.density << ", expTime: " << exp.timeExp << endl;
             vecExposure[i].push_back(exp);
         }
 
         expFile.close();         // Closing the file
 
-        sprintf(trkFileName,"%s/simtrk%c.txt",inputPath,namePrefix[i]);
+        sprintf(trkFileName,"%s/%strk%c.txt",inputPath,inFileName.c_str(),namePrefix[i]);
         trkFile.open(trkFileName);  // associate with a file
         cout << trkFileName << endl;
 

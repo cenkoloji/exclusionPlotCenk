@@ -22,6 +22,7 @@ int main(int argc,const char *argv[])
     double mai; // Initial mass
     double maf; // Final mass
     string cfgFileName;
+    string outFileName;
 
     // Command Line Arguments {{{
     if(argc>=2)
@@ -37,12 +38,25 @@ int main(int argc,const char *argv[])
                     {
                         case 'i' : mai=atof(argv[i+1]); break;
                         case 'f' : maf=atof(argv[i+1]); break;
+                        case 'o' : outFileName=(argv[i+1]); break;
                         default : return 0;
                     }
                 }
             }
         }
     }// }}}
+
+    double mass_step = 0.001; // eV
+
+
+    ofstream outFileMass;
+
+    char fnameMass[256];
+    sprintf(fnameMass,"/afs/cern.ch/exp/cast/mmscratch/cenk/excCodeCenk/inputs/mass_range.txt");
+
+    outFileMass.open(fnameMass);
+    outFileMass << mai << " " << maf;
+    outFileMass.close();
 
     cout << "\nCreating magnet instance..." <<endl ;
     castMagnet *mag = new castMagnet();
@@ -53,8 +67,8 @@ int main(int argc,const char *argv[])
     ofstream outFileTrk,outFileExp;
 
     char fnameTrk[256],fnameExp[256];
-    sprintf(fnameTrk,"/afs/cern.ch/exp/cast/mmscratch/cenk/excCodeCenk/inputs/simtrk1.txt");
-    sprintf(fnameExp,"/afs/cern.ch/exp/cast/mmscratch/cenk/excCodeCenk/inputs/simexp1.txt");
+    sprintf(fnameTrk,"/afs/cern.ch/exp/cast/mmscratch/cenk/excCodeCenk/inputs/%strk1.txt",outFileName.c_str());
+    sprintf(fnameExp,"/afs/cern.ch/exp/cast/mmscratch/cenk/excCodeCenk/inputs/%sexp1.txt",outFileName.c_str());
 
     cout << fnameTrk << endl;
     cout << fnameExp << endl;
@@ -66,19 +80,23 @@ int main(int argc,const char *argv[])
     outFileExp << std::setprecision(5);
 
     // Number of shifts
-    int nshifts = 30;
+    int nshifts ;
+    nshifts = int((maf - mai) / mass_step);
+    cout << "nshifts: " << nshifts <<endl ;
     double total_exposure_time = nshifts * 90 * 60; //seconds
 
     // Part1: Pressure exposure files{{{
 
     double pressure,density;
 
-    double pressure1 = 98.0;//mbar
-    double pressure2 = 100.0;//mbar
-        cout <<  gas->getPhotonMass(gas->getDensity(Tmag,pressure1*100)*1E-3) << endl;
-        cout <<  gas->getPhotonMass(gas->getDensity(Tmag,pressure2*100)*1E-3) << endl;
-    double pressure_step = 0.1; //mbar
-    int Np = (pressure2 - pressure1)/pressure_step;  // Number of pressure points
+    double pressure1 = gas->getPressure(Tmag,gas->getDensityFromPhotonMass(mai)*1E3)/100;//mbar
+    double pressure2 = gas->getPressure(Tmag,gas->getDensityFromPhotonMass(maf)*1E3)/100;//mbar
+    //crosscheck if pressures are calculated right
+        cout <<  gas->getPhotonMass(gas->getDensity(Tmag,pressure1*100)*1E-3) << " - " << pressure1 << endl;
+        cout <<  gas->getPhotonMass(gas->getDensity(Tmag,pressure2*100)*1E-3) << " - " << pressure2 << endl;
+    int Np = (maf - mai )/mass_step*2;  // Number of pressure points
+    double pressure_step = (pressure2 - pressure1) / Np;
+    cout << "Pressure step: " << pressure_step << endl;
 
     double angle;
     double angle_step = 1.;

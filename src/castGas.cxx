@@ -33,6 +33,14 @@ double castGas::getPhotonMass(double density){
 
 } // }}}
 
+//getPhotonMass(double density) return the expected mass of the axion in eV type 0 for 4He(ideal gas); type 1 for 3He HW (Jaime's formula) and type 2 for CW (Jaime's formula) for density(gr/cm3) {{{
+double castGas::getDensityFromPhotonMass(double ma){
+    // Same as Juanan and Theodoros, In my calculation const is 23.5 (compatible)
+
+    return pow(ma/23.46550825,2); // 23.5 would be enough I think. I found this constant a bit different
+
+} // }}}
+
 //getMagnetLength(double pressure,double angle) return the magnet lengt(m) for a given pressure inside de Coldbore {{{
 double castGas::getMagnetLength(double pressure, double angle)
 {
