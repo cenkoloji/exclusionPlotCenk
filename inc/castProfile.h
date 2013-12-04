@@ -20,7 +20,7 @@ class castProfile
 
     public:
 
-        // PCB(Pa), Tmag(K), angle(deg)
+        //Constructor from PCB(Pa), Tmag(K), angle(deg), cfg(castConfig)
         castProfile(castGas * cG, double PCB, double Tmag, double angle, castConfig * cfg);
         ~castProfile();
 

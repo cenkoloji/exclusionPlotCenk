@@ -11,12 +11,6 @@ Date: 22 Oct 2010
 #ifndef _CASTCONVERSION_
 #define _CASTCONVERSION_
 
-/*
-#ifndef _ROOT_TOBJECT_
-#include <TObject.h>
-#endif
-*/
-
 #include<castMagnet.h>
 #include<castGas.h>
 #include<castProfile.h>
@@ -32,11 +26,7 @@ Date: 22 Oct 2010
 #define BLconversion 0.989842342144  // From Tm to GeV
 #define Lconversion  5067730.93     // From m to eV-1
 
-
-//using namespace std;
-
-
-class castConversion// : public TObject
+class castConversion
 {
 
     public:
@@ -46,32 +36,19 @@ class castConversion// : public TObject
 
         castMagnet *mag;    //The parameters of the magnet
         castGas *gas;       //The parameters of the gas
-        castConfig *cfg;    //The density profile 
+        castConfig *cfg;    //The config class (defines settings for density profiles)
 
-        //Probability of conversion for a axion mass (eV), a energy (keV), pressure(mbar) and angle(deg) // OLD Method, Deprecated
-        double ConversionProbability(double ma, double Ea, double pressure, double density, double angle = 0.0);
+        //Probability of conversion for a axion mass (eV), a energy (keV), pressure(mbar), temperature(K) and angle(deg)
+        double ConversionProbability(double ma, double Ea, double pressure, double temperature, double angle = 0.0);
 
-        //Probability of conversion for a axion mass (eV), Ea energy (keV), pressure(mbar), temp(K) and angle(deg), integrating over density profile
-        double ConversionProbabilityFromProfile(double ma, double Ea, double pressure, double temperature, double angle);
-
-        //Probability of conversion for a axion mass (eV), Ea energy (keV), pressure(mbar), temp(K) and angle(deg), calculating using center density and fixed length
-        double ConversionProbabilityFromLength(double ma, double Ea, double pressure, double temperature, double angle);
-
-        //return the normalized factor for press(mbar), angle(deg)
-        double CalculateNormalizedFactor(double press,double angle = 0.0);
-
-        //absortion coefficient factor for a pressure and a energy in the magnet (energy in keV and density in g/cm3)
+        //absortion coefficient factor for a density( g/cm3) and a energy(keV)
         double AbsorptionCoeff(double en, double density,double angle = 0.0);
 
         //Axion flux cm-2 s-1 keV-1 (energy in eV)
         double getAxionFlux( double e );
 
-        //Expected number of counts for a energy range (keV) a axion mass (eV) a expected mgamma (eV), pressure(mbar) and the exposure time (seconds) 
-        double ExpectedNumberOfCounts( double Ei, double Ef, double ma, double pressure, double density, double time );
-
-        //Expected number of counts for a energy range (keV) a axion mass (eV) a expected mgamma (eV), pressure(mbar), temp(K), ang(deg) the exposure time (seconds) 
+        //Expected number of counts for a energy range (keV), an axion mass (eV), pressure(mbar), temp(K), ang(deg), the exposure time (seconds) 
         double ExpectedNumberOfCounts( double Ei, double Ef, double ma, double pressure, double temperature, double angle, double time );
 
-        //ClassDef(castConversion,1)
 };
 #endif

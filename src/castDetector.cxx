@@ -1,12 +1,9 @@
-
 #include <castDetector.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fstream>
 #include <iostream>
 #include <cstdlib>
-
-//ClassImp(castDetector)
 
 // Default constructor, setting efficiency points to 0, initializing Einitial, Efinal, focusArea {{{
 castDetector::castDetector(double Ei, double Ef, double focusarea, double oeff): Einitial(Ei), Efinal(Ef), focusArea(focusarea),opticsEfficiency(oeff)
@@ -22,8 +19,7 @@ castDetector::castDetector(double Ei, double Ef, double focusarea, double oeff):
 
 castDetector::~castDetector( ) { }
 
-//setDetEfficiency(char *effFileName,double softEff) set the efficiency of the detector from text file in format (energy efficiency) the energy bins start at 0.1 keV and end at 11.9 keV with a step of stepsize keV {{{
-void castDetector::setDetEfficiency(char *effFileName, char *softEffFileName)
+void castDetector::setDetEfficiency(char *effFileName, char *softEffFileName) //{{{
 {
 
     int i = 0;
@@ -62,8 +58,7 @@ void castDetector::setDetEfficiency(char *effFileName, char *softEffFileName)
 
 } //}}}
 
-//getDetEfficiency(double e,bool interpolate) return the efficiency of the detector for a given energy (in keV), with or without interpolation {{{
-double castDetector::getDetEfficiency(double e,bool interpolate)
+double castDetector::getDetEfficiency(double e,bool interpolate)//{{{
 {
 
     double en,eff;
@@ -104,8 +99,7 @@ double castDetector::getDetEfficiency(double e,bool interpolate)
     return eff;
 } // }}}
 
-//getMeanEfficiency() return the mean efficiency of the detector in the energy range of operation for the detector {{{
-double castDetector::getMeanEfficiency()
+double castDetector::getMeanEfficiency() //{{{
 {
 
     double nEff=0,eff=0,en;

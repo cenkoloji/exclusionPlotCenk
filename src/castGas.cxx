@@ -6,15 +6,15 @@
 
 using namespace std;
 
-//ClassImp(castGas)
-
 //castGas::castGas(double atw, castMagnet *CASTM, int t) // Constructor {{{
 castGas::castGas(double atw, castMagnet *CASTM, int t)
 {
+
     atomicwg = atw;
     type=t;
     mag = CASTM;
 
+    // Parameters for Peng-Robinson EoS
     rgas = 8314.34 / 3.016;
     a0 = 0.457235*rgas*rgas*TCRIT*TCRIT/PCRIT;  /*coefficients from Wikipedia, sligthly different values in Fluent user guide ... */
     b0 = 0.077796*rgas*TCRIT/PCRIT;
@@ -25,37 +25,18 @@ castGas::castGas(double atw, castMagnet *CASTM, int t)
 
 castGas::~castGas(){ }
 
-//getPhotonMass(double density) return the expected mass of the axion in eV type 0 for 4He(ideal gas); type 1 for 3He HW (Jaime's formula) and type 2 for CW (Jaime's formula) for density(gr/cm3) {{{
-double castGas::getPhotonMass(double density){
-    // Same as Juanan and Theodoros, In my calculation const is 23.5 (compatible)
+double castGas::getPhotonMass(double density){ // {{{
 
     return 23.46550825*sqrt(density); // 23.5 would be enough I think. I found this constant a bit different
 
 } // }}}
 
-//getPhotonMass(double density) return the expected mass of the axion in eV type 0 for 4He(ideal gas); type 1 for 3He HW (Jaime's formula) and type 2 for CW (Jaime's formula) for density(gr/cm3) {{{
-double castGas::getDensityFromPhotonMass(double ma){
-    // Same as Juanan and Theodoros, In my calculation const is 23.5 (compatible)
+double castGas::getDensityFromPhotonMass(double ma){ //{{{
 
-    return pow(ma/23.46550825,2); // 23.5 would be enough I think. I found this constant a bit different
+    return pow(ma/23.46550825,2);
 
 } // }}}
 
-//getMagnetLength(double pressure,double angle) return the magnet lengt(m) for a given pressure inside de Coldbore {{{
-double castGas::getMagnetLength(double pressure, double angle)
-{
-    // ***ANGLE may be added later
-
-    if(type==0)
-        return mag->getLenMag();
-    else if(type==1)
-        return (922.3-4.8*pressure)*1E-2; // Nuno CFD
-    else if (type==2)
-        return (861.1-2.1*pressure)*1E-2; // Nuno CFD
-    else
-        return 0;
-
-} // }}}
 
 //Show() Simple function to print basic information about gas {{{
 void castGas::Show() // 
@@ -118,27 +99,9 @@ double castGas::getPressure(double temp, double density) // {{{
      return rgas*temp/(v-b0)-a0*alfapr/(v*v+2.*b0*v-b0*b0);
 } // }}}
 
-/*
-double castGas::getHydrostatic(double press, double temp, double x, double angle) // {{{
-{
-
-    // dens(kg/m3) * h(m) * g(m/s2)
-
-    double density = getDensity(temp,press);
-
-    double height = sin(angle*PI/180.) * ( POSPCB - x );
-
-    return density * height * GRAVITY;
-
-    //P(x) = PCB + Phydro
-
-} // }}}
-*/
-
 double castGas::getHydrostatic(double PCB, double temp, double x, double angle) // {{{
 {
 
-    //double hydro1 = getHydrostatic(PCB, temp, POSPCB, x, angle);
 
     // dens(kg/m3) * h(m) * g(m/s2)
     
@@ -157,6 +120,7 @@ double castGas::getHydrostatic(double PCB, double temp, double x, double angle) 
         pressure = pressure + phydro;
     }
 
+    // double hydro1 = getHydrostatic(PCB, temp, POSPCB, x, angle);
     // cout << hydro1 << " " <<  phydro << " " << hydro1- phydro   << " " << (hydro1 - phydro)*100/phydro  << endl;
     return phydro;
    
@@ -174,3 +138,24 @@ double castGas::getHydrostatic(double press, double temp, double x0, double x1, 
 
 } // }}}
 
+
+/* Deprecated
+
+//getMagnetLength(double pressure,double angle) return the magnet lengt(m) for a given pressure inside de Coldbore {{{
+double castGas::getMagnetLength(double pressure, double angle)
+{
+    // ***ANGLE may be added later
+
+    if(type==0)
+        return mag->getLenMag();
+    else if(type==1)
+        return (922.3-4.8*pressure)*1E-2; // Nuno CFD
+    else if (type==2)
+        return (861.1-2.1*pressure)*1E-2; // Nuno CFD
+    else
+        return 0;
+
+} // }}}
+
+
+*/

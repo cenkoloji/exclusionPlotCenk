@@ -11,12 +11,6 @@ Date: 24 Oct 2010
 #ifndef _CASTDETECTOR_
 #define _CASTDETECTOR_
 
-/*
-#ifndef _ROOT_TOBJECT_
-#include <TObject.h>
-#endif
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -25,7 +19,7 @@ Date: 24 Oct 2010
 
 using namespace std;
 
-class castDetector // : public TObject
+class castDetector
 {
 
         private:
@@ -47,7 +41,7 @@ class castDetector // : public TObject
 		~castDetector();
 
 		//Sets
-		void setDetEfficiency(char *effFileName,char *softEffFileName); // for MM
+		void setDetEfficiency(char *effFileName,char *softEffFileName); // for MM, sets efficiency from 2 files
 		void setEinitial(double Ei){Einitial = Ei;};
 		void setEfinal(double Ef){Efinal = Ef;};
 		void setFocusArea(double fA){focusArea = fA;};  //For SSMM, same as CB area
@@ -67,6 +61,5 @@ class castDetector // : public TObject
                 // Function to print information
                 void Show();
 
-	//ClassDef (CASTDetector,1);
 };
 #endif

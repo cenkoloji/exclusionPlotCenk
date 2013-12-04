@@ -22,14 +22,16 @@ class castConfig
 
     private:
         double a;
-    
+
     public:
 
 	castConfig(string fname);
 	~castConfig();
 
-    // Path options
-    string outpath;
+        // Path options {{{
+        // Main path that contain output folders, folder should be placed in CAST_PATH
+        string outpath;
+        // }}}
 
         // castProfile options {{{
 

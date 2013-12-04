@@ -26,9 +26,11 @@ castConfig::castConfig(string fname)
     //Checking if file is opened without error
     if (!cfgFile.is_open()) { cout << "Could not open the file " << file2read << " -> Terminating..." << endl; exit(EXIT_FAILURE); }
 
-    // Looping over lines
     string key, value;
     string line;
+    size_t found;
+
+    // Looping over lines in config file
     for (int j = 0; cfgFile.good(); j++)
     {
         //Reading line
@@ -41,7 +43,6 @@ castConfig::castConfig(string fname)
         //cout << line << endl;
 
         // Getting the position of space
-        size_t found;
         found=line.find(' ');
 
         //If space is not found ignoring
@@ -53,7 +54,7 @@ castConfig::castConfig(string fname)
         //cout << "Key: " << key << endl;
         //cout << "Value: " << value << endl;
 
-        // General Options{{{
+        // Path Options{{{
         if (key=="OUT_PATH")
             outpath = value;
         //}}}

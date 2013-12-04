@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include<castGas.h>
 #include<castProfile.h>
@@ -9,9 +8,9 @@ castProfile::castProfile(castGas * cG, double press, double Tmag, double angle, 
 {
 
     pCenter = cfg->pCenter; // If true, the pressure is central pressure instead of P_CB(at -5m)
-    lenstart = -4.; //Should be get by a function in castGas
-    lenend = 4.; //Should be get by a function in castGas
-    increment = cfg->increment; // Can be angle+pressure dependent
+    lenstart = -4.; //Should be get  as a function of pressure// TODO
+    lenend = 4.; //Should be get as a function  of pressure //TODO
+    increment = cfg->increment; // Can be made angle+pressure dependent
 
     if (increment == 0.0)
         elements = 1;

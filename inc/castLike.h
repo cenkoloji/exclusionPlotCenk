@@ -12,12 +12,6 @@ Date: 27 Oct 2011
 #ifndef _CAST_LIKE_
 #define _CAST_LIKE_
 
-/*
-#ifndef _ROOT_TOBJECT_
-#include <TObject.h>
-#endif
-*/
-
 #define MAX_ITERATIONS 100000
 #define CONVERGENCE 5000
 #define MAX_DETECTORS 12
@@ -31,7 +25,7 @@ Date: 27 Oct 2011
 
 using namespace std;
 
-class castLike// : public TObject
+class castLike
 {
 
 	public:
@@ -54,7 +48,7 @@ class castLike// : public TObject
                 double sigmaLeft;   //Left Sigma. Calculated by GetMaxLike
                 double sigmaRight;   //Left Sigma. Calculated by GetMaxLike
 
-                // Fills missing vars of Tracking vector
+                // Fills missing variables(expCnts, bckCnts) of Tracking vector, needed to calculate likelihood function
                 void FillTrackingVectors(double ma,vector<castTracking> vecTrk[]);
 
 		//readGasTypes for combined analysis 2008+2010 gaps can change inside the likelihood the type of gas
@@ -70,9 +64,6 @@ class castLike// : public TObject
                 //Dummy function to check different values of g vs chi
                 double plot_gL4(double ma, const vector<castExposure> vecExp[],const vector<castTracking> vecTrk[],double *range);
 
-                //This function calculates the minimun value for gL4 for a given axion mass
-		//double GetMinLike(double ma,TTree *expTree[],TTree *tckTree[],TTree &gL4Tree, double g4,double &sigmaLeft,double &sigmaRight);
-
                 //This function finds maximum likelihood and shape of the curve for sigmas 
                 double GetMaxLike(double ma, const vector<castExposure> vecExp[],const vector<castTracking> vecTrk[], double g4max, bool writeToFile=false);
 
@@ -87,8 +78,6 @@ class castLike// : public TObject
                 
                 // Trial to make likelihood calculation a function, problem is passign too many objects to it. It would be better to have these objects as class members
                 double CalculateLikelihood(double ma, double g4, double nGamma, const vector<castExposure> vecExp[],const vector<castTracking> vecTrk[] );
-
-	//ClassDef(CASTLike,1)
 
 };
 #endif
