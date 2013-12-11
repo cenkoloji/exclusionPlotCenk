@@ -18,12 +18,12 @@ INC_DIRS = -I$(CAST_PATH)/inc
 
 # set of objets used in compilation
 OBJS =  $(CAST_OBJ)/castConversion.o $(CAST_OBJ)/castDetector.o $(CAST_OBJ)/castExposure.o $(CAST_OBJ)/castGas.o $(CAST_OBJ)/castLike.o $(CAST_OBJ)/castMagnet.o $(CAST_OBJ)/castTracking.o $(CAST_OBJ)/castProfile.o $(CAST_OBJ)/castConfig.o
-BINARIES =  $(CAST_BIN)/testSim $(CAST_BIN)/singleDetector $(CAST_BIN)/density2mass  $(CAST_BIN)/conversionStudy
+BINARIES =  $(CAST_BIN)/testSim $(CAST_BIN)/singleDetector $(CAST_BIN)/density2mass  $(CAST_BIN)/conversionStudy $(CAST_BIN)/simulateData
 
 #defining compiling targets
 all: Wellcome castConfig castTracking castExposure castMagnet castDetector castGas castConversion castGas castLike castProfile libCAST programs
 #programs: singleDetector density2mass conversionStudy
-programs: conversionStudy testSim
+programs: conversionStudy testSim simulateData
 
 castConversion: $(CAST_OBJ)/castConversion.o
 castDetector: $(CAST_OBJ)/castDetector.o
@@ -38,6 +38,7 @@ libCAST: $(CAST_LIB)/libCAST.so
 testSim: $(CAST_BIN)/testSim
 stepSize: $(CAST_BIN)/stepSize
 conversionStudy: $(CAST_BIN)/conversionStudy
+simulateData: $(CAST_BIN)/simulateData
 singleDetector: $(CAST_BIN)/singleDetector
 density2mass: $(CAST_BIN)/density2mass
 
@@ -116,6 +117,9 @@ $(CAST_BIN)/conversionStudy: $(CAST_SRC)/castConversion.cxx $(CAST_INC)/castConv
 	@echo -e "\033[40m\033[0;32m  compiling conversionStudy program........\033[0m"
 	@g++ $(CPPFLAGS)  $(INC_DIRS) -o $(CAST_BIN)/conversionStudy $(CAST_SRC)/conversionStudy.cxx $(CAST_LIB)/libCAST.so
 
+$(CAST_BIN)/simulateData: $(CAST_SRC)/castGas.cxx $(CAST_INC)/castGas.h $(CAST_SRC)/castMagnet.cxx $(CAST_INC)/castMagnet.h $(CAST_LIB)/libCAST.so $(CAST_SRC)/simulateData.cxx $(CAST_SRC)/castConfig.cxx $(CAST_INC)/castConfig.h  makefile
+	@echo -e "\033[40m\033[0;32m  compiling simulateData program........\033[0m"
+	@g++ $(CPPFLAGS)  $(INC_DIRS) -o $(CAST_BIN)/simulateData $(CAST_SRC)/simulateData.cxx $(CAST_LIB)/libCAST.so
 
 clean:
 	@echo -e "\033[40m\033[0;34m  Removing objects ........\033[0m"

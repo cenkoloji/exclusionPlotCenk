@@ -93,15 +93,15 @@ int main(int argc,char **argv)
     cout << "Increment5: " << cfg5->increment <<endl ;
 
     castProfile * profile;
-    castProfile * profile2;
     profile = new castProfile(gas, pressure, temperature, angle, cfg1);
     double ma = gas->getPhotonMass(profile->centerdensity*1E-3);
     //cout << "P vs Pcen: " << pressure << " " << profile->centerpressure << endl;
     //cout << "d vs dcen: " <<  gas->getDensity(temperature, pressure)<< " " << profile->centerdensity << endl;
     cout << ma << endl;
-    double ma2 = gas->getPhotonMass(gas->getDensity(temperature, pressure)*1E-3);
+    //double ma2 = gas->getPhotonMass(gas->getDensity(temperature, pressure)*1E-3);
     //cout << ma << " " << ma2 << endl;
 
+    //castProfile * profile2;
     //profile2 = new castProfile(gas, pressure, temperature, angle, cfg2);
     //ma = gas->getPhotonMass(profile2->centerdensity*1E-3);
     //cout << ma << endl;

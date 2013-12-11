@@ -6,9 +6,9 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as pl
 
-plot_sigma = 1
+plot_sigma = 0
 plot_limit = 1
-lims = [(0.1,1.2)]
+lims = [(0.40,1.13)]
 
 #colors = {1:"red",2:"green",3:"blue","all":"black"}
 #ls = {1:"dotted",2:"-",3:"dashdot","all":"-"}
@@ -162,16 +162,16 @@ if plot_sigma:#{{{
 #}}}
 
 if plot_limit:#{{{
-    pl.figure(1,figsize=(12,5))
+    pl.figure(1,figsize=(7,4))
 
     #pl.title("Number of Expected Photons")
     ax = pl.gca()
     #ax.set_xlim(0.85,0.95)
     ax.set_xlim(lims[0])
     ax.set_xlabel("Axion mass(eV)")
-    ax.set_ylabel("Number of expected photons")
+    ax.set_ylabel("Expected number of photons")
 
-    pl.figure(2)
+    pl.figure(2,figsize=(7,4))
 
     #pl.title("Exclusion Plot")
     ax = pl.gca()
@@ -195,6 +195,9 @@ if plot_limit:#{{{
     #pl.savefig("exc_ngamma.pdf",bbox_inches="tight")
 
     pl.figure(2)
+    ax.set_xlim(lims[0])
+    ax.set_ylim((2E-10,8E-10))
+    ax2.set_ylim((-10,4))
 
     #Plotting models:{{{
     '''

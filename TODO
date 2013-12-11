@@ -1,8 +1,6 @@
 
-After implementation of castProfile and castConfig
+- the pressure and density units are a total mess and a lot of conversion is done in the code. Make all function arguments and outputs same unit(mbar, g/cm3)
 
-- Make conversionStudy
-- Add members to the castTracking class such as bckLevel and expCounts. Otherwise these are calculated at every iteration calculating the exclusion plot. Its stupid
 
 
 
@@ -25,25 +23,5 @@ After implementation of castProfile and castConfig
 + Check Pressure formulas (castGas::)
 
 
-If needed: Theo code:
+If needed: Theo's code:
 /afs/cern.ch/exp/cast/mmM11/wdirsr2010/Analysis2010/Exclusion
-
-
-
-IGNORE BELOW
-- Add angle if needed to all lines, that has flag ***ANGLE??? It's not baked enough
-    * If you'll add it best seems as recreating exposure file with 1 min bins, without doing fancy exposure calculation. And creating files as:
-    Pressure    Angle   ExpTime(fixed:60 sec)
-
-
-
-List of angle dependency:
-castConversion:
-    - CalculateNormalizedFactor
-        *castGas->GetMagnetLength
-    - ConversionProbability
-        *castGas->getPhotonMass
-        *CalculateNormalizedFactor
-        *AbsorptionCoeff
-        *castGas->getMagnetLength
-Ok there is a lot I can't track all here
