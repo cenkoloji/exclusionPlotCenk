@@ -8,9 +8,9 @@ castProfile::castProfile(castGas * cG, double press, double Tmag, double angle, 
 {
 
     pCenter = cfg->pCenter; // If true, the pressure is central pressure instead of P_CB(at -5m)
-    lenstart = -4.; //Should be get  as a function of pressure// TODO
-    lenend = 4.; //Should be get as a function  of pressure //TODO
     increment = cfg->increment; // Can be made angle+pressure dependent
+
+    GetStartEnd();
 
     if (increment == 0.0)
         elements = 1;
@@ -23,7 +23,7 @@ castProfile::castProfile(castGas * cG, double press, double Tmag, double angle, 
     double height = sin(angle*PI/180.) * increment;
 
     // Getting pressure at start of length, depending on the input being central pressure or PCB
-    if (cfg->pCenter)
+    if (cfg->pCenter)// Input is central pressure, calculating pressure at start of the profile
     {
         pressure[0] = press + gas->getHydrostatic(press,Tmag,0,lenstart,angle);
         //cout << press <<  " " <<  gas->getHydrostatic(press,Tmag,0,lenstart,angle) << endl;
@@ -32,7 +32,7 @@ castProfile::castProfile(castGas * cG, double press, double Tmag, double angle, 
     }
     else
     {
-        pressure[0] = press + gas->getHydrostatic(press,Tmag,lenstart,angle);
+        pressure[0] = press; // + gas->getHydrostatic(press,Tmag,lenstart,angle); // Pressure given by Pcb is same as pressure in the start of the profile, as there is not much gas volume in between
         //cout << press <<  " " <<  gas->getHydrostatic(press,Tmag,lenstart,angle) << endl;
         centerpressure = press + gas->getHydrostatic(press,Tmag,0,angle);
         centerdensity = gas->getDensity(Tmag,centerpressure);
@@ -69,6 +69,16 @@ castProfile::~castProfile() //{{{
     delete []density;
     delete []pressure;
 }//}}}
+
+void castProfile::GetStartEnd()//{{{
+{
+
+    // TODO: This function should have a parametrization of start and end points of profile.
+    lenstart = -4.; //Should be get  as a function of pressure and angle // TODO
+    lenend = 4.; //Should be get as a function  of pressure and angle //TODO
+
+}
+//}}}
 
 /*
     //{{{  int method = 2; // Different ways to calculate hydrostatic pressure

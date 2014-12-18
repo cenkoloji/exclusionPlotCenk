@@ -2,7 +2,6 @@
 # 	MAKEFILE : CAST software
 # ---------------------------------------------------------------------
 
-# All "-I /usr/include/shift/"  added by Cenk. (There was an error)
 
 CPPFLAGS = -fPIC -g -O2
 

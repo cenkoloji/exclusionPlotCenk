@@ -1,3 +1,6 @@
+- Start profile is already P_CB,
+Send code to theo
+
 
 - the pressure and density units are a total mess and a lot of conversion is done in the code. Make all function arguments and outputs same unit(mbar, g/cm3)
 

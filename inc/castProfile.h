@@ -24,6 +24,8 @@ class castProfile
         castProfile(castGas * cG, double PCB, double Tmag, double angle, castConfig * cfg);
         ~castProfile();
 
+        void GetStartEnd(); // Calculates lenstart and lenend using the angle and pressure
+
         castGas *gas;       //The parameters of the gas
         castConfig *cfg;    //The config class instant
 
